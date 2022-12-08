@@ -1,0 +1,32 @@
+{%extends "layout.html" %}
+
+{% block title%} Register {%endblock%}
+
+{% block main%}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-danger {{ category }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+<h2 class="text-primary title">Register</h2>
+<div class="form-area">
+    <form action="/register" method="POST">
+        <label for="username" class="form-label">Username</label>
+        <input type="text" maxlength="20" minlength="4" placeholder="Username (min. 4 characters)" id="username" name="username" class="form-control">
+        
+        <label for="email" class="form-label">Email</label>
+        <input type="text" placeholder="Email" name="email" class="form-control" id="email">
+        
+        <label for="password" class="form-label">Password</label>
+        <input type="password" minlength="6" placeholder="Password (min. 6 characters)" name="password" class="form-control" id="password">
+
+        <label for="confirm" class="form-label">Confirm Password</label>
+        <input type="password" minlength="6" placeholder="Re-type Password" id="confirm" name="confirmation" class="form-control">
+        
+        <button type="submit" class="btn btn-primary mt-4">Register</button>
+    </form>
+</div>
+{%endblock%}

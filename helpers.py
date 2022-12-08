@@ -9,3 +9,10 @@ def strip_eval(x):
 
 def cap(x):
     return x.capitalize()
+
+def attempt(dictionary, x):
+    try:
+        dictionary[x]
+        return True
+    except:
+        return False

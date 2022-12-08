@@ -4,6 +4,13 @@
 
 
 {%block main%}
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-success {{ category }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
         <!-- main content -->
         <h1 id="about-title" class="display-5"> About KnightStable </h1>
 

@@ -1,0 +1,10 @@
+{%extends "layout.html"%}
+
+{%block title%} Log out {%endblock%}
+
+{%block main%}
+<form action="/logout" method="POST" class="position-absolute start-50 translate-middle-x">
+    <div><h1 class="text-danger fw-bolder">Are you sure you want to log out?</h1></div>
+    <button type="submit" class="btn btn-danger log-out-btn"> Log Out</button>
+</form>
+{%endblock%}

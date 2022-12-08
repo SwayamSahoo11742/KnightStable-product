@@ -108,3 +108,16 @@ h1{
  .loss-bar{
     color:white;
  }
+
+ .form-area{
+    max-width: 35%;
+    margin-left: 35%;
+ }
+
+ .title{
+    margin: 3% 3% 3% 47%;
+ }
+
+ .log-out-btn{
+    margin-left: 45%;
+ }
