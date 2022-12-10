@@ -1,0 +1,51 @@
+{%extends "layout.html" %}
+
+{%block title%} Play {%endblock%}
+
+
+{%block main%}
+
+<div class="row">
+    <div class="col-3">
+        <!-- player info cards -->
+        <div class="card player-card">
+            <div class="m-3">
+                    <img src="{{url_for('static', filename='logo.jpg')}}" class="pfp"> 
+                    <h5 class="card-title player-name m-2"> Dodo11742</h5>
+                    <h6 class="card-subtitle player-rating ms-1 fs-3 d-inline-block"> 1796</h6>
+                </span>
+            </div>
+        </div>
+        <div class="card player-card" id="player2">
+            <div class="m-3">
+                <span>
+                    <img src="{{url_for('static', filename='logo.jpg')}}" class="pfp"> 
+                    <h5 class="card-title player-name m-2"> Erklong</h5>
+                    <h6 class="card-subtitle player-rating ms-1 fs-3 d-inline-block"> 1901</h6>
+                </span>
+            </div>
+        </div>
+    </div>
+    <!-- Playing Board -->
+    <div class="col-1">
+        <div id="board" class="board"></div>
+    </div>
+    <!-- moves table -->
+    <div class="col card move-table" id="moves">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th colspan="3" class="text-center"> Moves</th>
+                </tr>
+            </thead>
+            <tbody class="table-group-divider">
+                <tr>
+                    <!-- Move Update -->
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<script src="{{ url_for('static', filename='js/chessboard-1.0.0.js') }}"></script>
+<script src="{{ url_for('static', filename='game.js') }}" type="module"></script>
+{%endblock%}

@@ -121,3 +121,57 @@ h1{
  .log-out-btn{
     margin-left: 45%;
  }
+
+ .board{
+    width: 550%;
+    margin-left: 30%;
+    margin-top: 7%;
+ }
+
+
+
+ .pfp{
+    max-width: 50px;
+    max-height: auto;
+    display: inline-block;
+    border: 1px solid black;
+ }
+
+
+ .player-card{
+    min-width: 100%;
+    margin: 12px;
+
+ }
+
+ .player-card > div{
+    display: inline;
+ }
+
+ .player-name{
+    display: inline-block;
+ }
+
+ #player2{
+    margin-top: 95%;
+ }
+
+ .table{
+    width: 100%;
+    
+ }
+
+ #moves{
+    margin-left: 32%;
+    max-width: 31%;
+    margin-top: 5px;
+ }
+
+ .table-responsive {
+    max-height:300px;
+}
+
+.move-table{
+    max-height: 450px;
+    overflow: auto;
+}

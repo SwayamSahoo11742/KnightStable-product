@@ -234,3 +234,11 @@ def openings():
 def recommended():
     return render_template("recommended.html", logged=attempt(session,"logged"))
 
+
+@app.route("/play")
+def play():
+    return render_template("play.html")
+
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
