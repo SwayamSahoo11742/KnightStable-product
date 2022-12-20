@@ -3,12 +3,13 @@ import time
 from bs4 import BeautifulSoup
 import sqlite3
 from selenium.webdriver.common.by import By
+
 # Connecting to Database
 db = sqlite3.connect("games.db")
 
 # Using selenium to update JS
 driver = webdriver.Chrome()
-url= "https://old.chesstempo.com/chess-openings.html"
+url = "https://old.chesstempo.com/chess-openings.html"
 driver.maximize_window()
 driver.get(url)
 
@@ -18,15 +19,14 @@ time.sleep(2)
 # Connecting parser
 
 
-
 # Getting the page buttons
 
-for i in range(2,41):
+for i in range(2, 41):
     time.sleep(2)
     my_element = driver.find_element(By.XPATH, f"//a[text()='{str(i)}']")
     my_element.click()
-    content = driver.page_source.encode('utf-8').strip()
-    soup = BeautifulSoup(content,"html.parser")
+    content = driver.page_source.encode("utf-8").strip()
+    soup = BeautifulSoup(content, "html.parser")
 
     openings = soup.find_all("table")[1]
     rows = openings.find_all("tr")
@@ -54,7 +54,7 @@ for i in range(2,41):
                 color = "white"
             else:
                 color = "black"
-            
+
             # Making a dict data for the opening
             data = {
                 "name": str(i[0].text),
@@ -62,7 +62,7 @@ for i in range(2,41):
                 "win_rate": str(i[8].text),
                 "draw_rate": str(i[9].text),
                 "loss_rate": str(i[10].text),
-                "moves": str(i[11].text)
+                "moves": str(i[11].text),
             }
 
             # Appending dict to master dict
@@ -79,9 +79,16 @@ for i in range(2,41):
     # Looping through each opening and adding it to database
     for opening in opening_dict:
         # Declaring data tuple
-        data_tuple = (opening["name"], opening["color"], opening["win_rate"], opening["draw_rate"], opening["loss_rate"], opening["moves"])
-        cursor.execute(query,data_tuple)
-        
+        data_tuple = (
+            opening["name"],
+            opening["color"],
+            opening["win_rate"],
+            opening["draw_rate"],
+            opening["loss_rate"],
+            opening["moves"],
+        )
+        cursor.execute(query, data_tuple)
+
     # Closing cursor and commiting changes
     cursor.close()
     db.commit()

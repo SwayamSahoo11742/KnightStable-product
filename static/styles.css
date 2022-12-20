@@ -153,7 +153,7 @@ h1{
  }
 
  #player2{
-    margin-top: 95%;
+    margin-top: 25%;
  }
 
  .table{
@@ -167,11 +167,24 @@ h1{
     margin-top: 5px;
  }
 
- .table-responsive {
-    max-height:300px;
-}
+
 
 .move-table{
     max-height: 450px;
     overflow: auto;
+}
+
+.fake-board{
+    width: 95%;
+    padding: 0px;
+}   
+
+#match-settings-card{
+    margin: 8% 8% 0 0;
+    min-width: 85%;
+    min-height: 90%;
+}
+
+.loading-img{
+    display: none;
 }

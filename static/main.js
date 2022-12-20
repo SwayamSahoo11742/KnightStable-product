@@ -9,7 +9,6 @@ var cards = document.querySelectorAll(".card")
 var drawBar = document.querySelectorAll(".draw-bar")
 var lossBar = document.querySelectorAll(".loss-bar")
 var winBar = document.querySelectorAll(".win-bar")
-
 // Making the bars
 for (var i = 0; i < drawBar.length; i++){
     drawBar[i].style.backgroundColor = "gray"
