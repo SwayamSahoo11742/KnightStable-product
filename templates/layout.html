@@ -21,7 +21,7 @@
         <!-- Customized CSS -->
         <link href="/static/css/styles.css" rel="stylesheet">
         <meta name="viewport" content="initial-scale=1, width=device-width">
-
+        
         <!-- Title -->
         <title>KnightStable: {%block title%}{%endblock%}</title>
         
@@ -66,7 +66,35 @@
                         <a class="nav-link ms-5" href="/play">Play</a>
                     </li>
                     {%endif%}
-
+                    <!-- Profile picture -->
+                    <!-- if not logged in -->
+                    {%if session['pfp'] is not defined%}
+                    <li>
+                        <img src="{{url_for('static', filename='img/pfp/logo.jpg')}}"  class="header-pfp">
+                    </li>
+                    {%else%}
+                    <li>
+                        <!-- If logged in -->
+                        <div class="dropdown">
+                            <!-- pfp as a button -->
+                            <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              <img src="{{session['pfp']}}" class="header-pfp">
+                            </button>
+                            <!-- drodown options -->
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                              <!-- Name -->
+                              <div class="dropdown-item">{{session["username"]}}</div>
+                              <!-- Stats link -->
+                              <a class="dropdown-item" href="#">Stats</a>
+                              <!-- Profile Link -->
+                              <a class="dropdown-item" href="/profile">Profile</a>
+                              <!-- Account settings link -->
+                              <a class="dropdown-item" href="/account">Account Settings</a>
+                            </div>
+                          </div>
+                        
+                    </li>
+                    {%endif%}
                 </ul>
         </nav>
                 <!-- Main content block -->
