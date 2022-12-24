@@ -10,7 +10,7 @@ var opponentRating = document.querySelector("#opponent-rating")
 var moveCount = 0
 // determining whose move it is to update timers
 var whoseMove = "white"
-var socket = io.connect("/play")
+var socket = io.connect("/play", {'sync disconnect on unload':true})
 var selfColor = null
 var gameData = null
 // Selecting modals
@@ -19,8 +19,10 @@ var resignBtn = document.querySelector("#resign")
 var resignModal = new bootstrap.Modal(document.querySelector("#resign-modal"));
 var resignConfirm = document.querySelector("#resign-btn")
 var abort = document.querySelector("#abort")
+var abortModal = new bootstrap.Modal(document.querySelector("#abort-modal"))
+var timeStop = false
 // ----------------------------------------Event Listeners-----------------------------------------------------
-// If wanting to resign
+// If wanting to reisng
 resignBtn.addEventListener("click", function() {
     // confirmation modal
     resignModal.show();
@@ -29,6 +31,7 @@ resignBtn.addEventListener("click", function() {
 // If confirmed to resignation
 resignConfirm.addEventListener("click", function() {
     // Preapare and and send game data
+    socket.emit("resign")
     if (gameData.white === gameData.selfname) {
         var winner = "black"
         var gameInfo = getRating(gameData.black_rating, gameData.white_rating, "0-1")
@@ -43,21 +46,25 @@ resignConfirm.addEventListener("click", function() {
         gameInfo.data = gameData
         gameInfo.pgn = game.pgn()
         socket.emit("gameOver", gameInfo)
+
     }
     // Hide resignation modal
     resignModal.hide();
 })
 // If wanting to abore
 abort.addEventListener("click", function() {
+    // Show abort modal
+
     // Send over empty info 
     var gameInfo = {
         "black": 0,
         "white": 0,
-        "winner": "none",
+        "winner": "abort",
         "data": gameData,
         "pgn": game.pgn()
     }
     socket.emit("gameOver", gameInfo)
+    socket.emit("abort")
 })
 //------------------------------------------Making Board---------------------------------------------------------
 var board = null
@@ -65,6 +72,50 @@ var game = new Chess()
 var whiteSquareGrey = '#a9a9a9'
 var blackSquareGrey = '#696969'
 // --------------------------------- Socketio -------------------------------------------------------------------
+// When resigned
+socket.on('resign', ()=>{
+    // Stop clock
+    timeStop = true
+})
+
+// When aborted
+socket.on('abort', ()=>{
+    // show abort modal
+    abortModal.show()
+    // stop timers
+    timeStop = true
+})
+
+// When player connected
+socket.on("connect", ()=>{
+
+    // On abandonement
+    socket.on("disconnect", () =>{
+        // Send appropriate data
+        // if White
+        if (gameData.white === gameData.selfname) {
+            // Black is winner
+            var winner = "black"
+            var gameInfo = getRating(gameData.black_rating, gameData.white_rating, "0-1")
+            gameInfo.winner = winner
+            gameInfo.data = gameData
+            gameInfo.pgn = game.pgn()
+            socket.emit("gameOver", gameInfo)
+        // If black
+        } else {
+            // White is winner
+            var winner = "white"
+            var gameInfo = getRating(gameData.black_rating, gameData.white_rating, "1-0")
+            gameInfo.winner = winner
+            gameInfo.data = gameData
+            gameInfo.pgn = game.pgn()
+            socket.emit("gameOver", gameInfo)
+        }
+    })
+
+})
+
+// When game over
 socket.on("gameOver", (data) => {
     // If game over
     // if winner is self
@@ -82,12 +133,17 @@ socket.on("gameOver", (data) => {
     }
     // Show modal with modified msgs
     myModal.show();
+    // Stoping Time
+  
+        
 })
 
 // When message sent by server
 socket.on("message", (data) => {
+    console.log("here o am")
     // Create game data so other functions can access
     gameData = data
+    console.log(gameData)
     // Give your side you user name
     userName.innerText = data.selfname
     // if black
@@ -159,13 +215,16 @@ socket.on("moved", (data) => {
 
         // inserting notation
         var notation = pgn[moveCount].split(" ")[1]
-        $(table).find('tbody').append("<tr><td>" + moveCount.toString() + "." + "</td> <td>" + notation + "</tr>");
+        $(table).find('tbody').append("<tr><td>" + moveCount.toString() + "." + "</td><td>" + notation + "</tr>");
 
         //ticking Black's timer with an interval of 1 second
         var blackTimer = setInterval(function() {
             var time = countdown(blackPlayerTimer.innerText)
 
             // If white's time should be ticking
+            if (timeStop === true){
+                clearInterval(blackTimer)
+            }
             if (whoseMove === "white" || game.game_over()) {
 
                 // Stop black's time from ticking
@@ -209,6 +268,9 @@ socket.on("moved", (data) => {
             var time = countdown(whitePlayerTimer.innerText)
 
             // if Black's time should be ticking
+            if (timeStop === true){
+                clearInterval(whiteTimer)
+            }
             if (whoseMove === "black" || game.game_over()) {
 
                 // Stop this timer
@@ -232,6 +294,9 @@ socket.on("moved", (data) => {
     }
 
 })
+
+
+
 
 // ------------------------------Chess Board Functions-----------------------------------------------------------
 function removeGreySquares() {
@@ -352,8 +417,7 @@ function onSnapEnd() {
 // -----------------------------Timer Updating Functions-----------------------------------------------------
 // Counting down
 function countdown(time) {
-    // Getting the mins
-    console.log(time)
+    // Getting the minse
     var min = parseInt(time.split(":")[0])
 
     // Getting the secs
@@ -422,7 +486,7 @@ function getRating(blackRating, whiteRating, result) {
         }
     }
     // Deciding for is white wins
-    else if (result === "0-1") {
+    else if (result === "1-0") {
         var difference = blackRating - whiteRating
         if (Math.abs(difference <= 30)) {
             change.white = 8

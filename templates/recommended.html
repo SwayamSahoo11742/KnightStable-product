@@ -1,9 +1,17 @@
+<!-- Recommeneded links page -->
+
+<!-- Extends from layout -->
 {%extends "layout.html"%}
 
+<!-- Title -->
 {%block title%} Recommended {%endblock%}
-
+<!-- Specific links/scripts -->
+{%block links%}
+<link href="{{url_for('static', filename='css/about.css')}}" rel="stylesheet">
+{%endblock%}
+<!-- Main conetent -->
 {%block main%}
-
+<!-- Recommended Links -->
 <h1 id="about-title" class="display-5"> Recommended</h1>
 <div class="about-text">
     <p>

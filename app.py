@@ -1,13 +1,9 @@
-import random
-import json
-import os
 import sqlite3
-from flask import Flask, flash, redirect, render_template, request, session, current_app
+from flask import Flask, flash, redirect, render_template, request, session
 from flask_session import Session
-from tempfile import mkdtemp
 from werkzeug.security import check_password_hash, generate_password_hash
 from helpers import strip_eval, cap, attempt
-from flask_socketio import SocketIO, send
+from flask_socketio import SocketIO, send, join_room, leave_room
 from flask_ngrok import run_with_ngrok
 
 # Configure application
@@ -33,12 +29,26 @@ db = "C:/Users/Dodo/Desktop/Projects/games.db"
 # -------------------------------------SOCKETIO-----------------------------------------------------------------#
 socketio = SocketIO(app)
 
+# When aborted
+@socketio.on("abort", namespace="/play")
+def abort():
+    socketio.emit("abort", namespace="/play",to=session["curr_game"]["game_id"])
+
+# When a player has resigned
+@socketio.on("resign", namespace="/play")
+def resign():
+    # Send back resign event
+    socketio.emit("resign", namespace="/play",to=session["curr_game"]["game_id"])
+
 # When connected to /play
 @socketio.on("connect", namespace="/play")
 def connect(data):
     # Send back current game info
     data = session["curr_game"]
     data["selfname"] = session["username"]
+    room = session["curr_game"]["game_id"]
+    join_room(room)
+    print(data)
     send(data, namespace="/play")
 
 
@@ -46,12 +56,23 @@ def connect(data):
 @socketio.on("moved", namespace="/play")
 def message(data):
     # Send the moved event back
-    socketio.emit("moved", data, namespace="/play", broadcast=True)
+    socketio.emit("moved", data, namespace="/play", broadcast=True, to=session["curr_game"]["game_id"])
 
 
 # When game is over
 @socketio.on("gameOver", namespace="/play")
 def game_over(gameinfo):
+    # Connect to db
+    game = sqlite3.connect(db)
+    cursor = game.cursor()
+
+    # If aborted
+    if gameinfo["winner"] == "abort":
+        # Delete game from db
+        cursor.execute("DELETE FROM ksgame WHERE game_id = ?", (gameinfo["data"]["game_id"],))
+        # leave
+        return
+        
     # If winner is black
     if gameinfo["winner"] == "black":
         # Set loser to white
@@ -63,9 +84,9 @@ def game_over(gameinfo):
         winner = gameinfo["data"][gameinfo["winner"]]
     # If draw or aborted
     elif gameinfo["winner"] == "none":
-        # This section doesnt make sense, but for efficiency of code, 
+        # This section doesnt make sense, but for efficiency of code,
         # the loser and loser_mod is to white
-        # and winner and winner_mod is to black 
+        # and winner and winner_mod is to black
         # (To make clear, the status (winner/loser) do not have anything to do with the color in this case)
         loser = gameinfo["data"]["white"]
         loser_mod = gameinfo["white"]
@@ -80,9 +101,6 @@ def game_over(gameinfo):
         loser_mod = gameinfo["black"]
         # Winner is winner
         winner = gameinfo["data"][gameinfo["winner"]]
-    # Connect to db
-    game = sqlite3.connect(db)
-    cursor = game.cursor()
     # Setting game status to end and pgn to appropriate pgn
     cursor.execute(
         "UPDATE ksgame SET status = 'ended', pgn = ? WHERE game_id = ?",
@@ -101,10 +119,20 @@ def game_over(gameinfo):
     loser_rating = cursor.execute(
         "SELECT rating FROM users WHERE username = ?", (loser,)
     ).fetchone()[0]
-    cursor.execute(
+
+    # if loser's rating is below 100 (min)
+    if loser_rating - loser_mod < 100:
+        # set it to 100
+        cursor.execute(
         "UPDATE users SET rating = ? WHERE username = ?",
-        (loser_rating + loser_mod, loser),
-    )
+        (100, loser)),
+    # else
+    else:
+        # Deduct as normal
+        cursor.execute(
+            "UPDATE users SET rating = ? WHERE username = ?",
+            (loser_rating - loser_mod, loser),
+        )
     # Commiting
     game.commit()
     # Sending back the winner and rating modifiers to display on player's screen
@@ -112,6 +140,7 @@ def game_over(gameinfo):
         "gameOver",
         {"winner": winner, "winner_mod": winner_mod, "loser_mod": loser_mod},
         namespace="/play",
+        to=session["curr_game"]["game_id"],
         broadcast=True,
     )
 
@@ -128,6 +157,7 @@ def register():
     else:
         # Connecting to db
         users = sqlite3.connect(db)
+        users.row_factory = sqlite3.Row
         cursor = users.cursor()
 
         # Getting user's input
@@ -179,10 +209,20 @@ def register():
         data_tuple = (username, email, hash)
         cursor.execute(query, data_tuple)
 
-        # Commiting and closing
+        # Commiting
         users.commit()
-        users.close()
+
+        # Setting user's satus as logged
         session["logged"] = True
+        user_rows = cursor.execute(
+            "SELECT * FROM users WHERE username = ?", (request.form.get("username"),)
+        ).fetchall()
+        # Updating user's session with needed info
+        session["user_id"] = user_rows[0]["id"]
+        session["username"] = user_rows[0]["username"]
+        # Cloding db
+        users.close()
+        # Flask Message
         flash("Successfully registered")
         return redirect("/")
 
@@ -240,12 +280,10 @@ def logout():
 
 
 # Home page
-
-
 @app.route("/")
 def home():
 
-    return render_template("index.html", logged=attempt(session, "logged"))
+    return render_template("about.html", logged=attempt(session, "logged"))
 
 
 # Search Page
@@ -510,6 +548,7 @@ def play():
             # Saving to cookie session
             session["curr_game"] = curr_game
             # Redirecting to their game url
+
             return redirect("/play/" + str(cursor.lastrowid))
 
 
