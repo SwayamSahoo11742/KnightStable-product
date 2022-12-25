@@ -12,8 +12,8 @@ Specifics: "play.html" "game.html" */
 
 /* Profile Picture of the player(s) */
  .pfp{
-    max-width: 50px;
-    max-height: auto;
+    max-width: 20%;
+    max-height: 20%;
     display: inline-block;
     border: 1px solid black;
  }

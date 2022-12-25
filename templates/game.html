@@ -17,13 +17,18 @@
 
 <!-- Main Content -->
 {%block main%}
+<!-- Transfering pfp data -->
+<script>
+  var whitePfp = "{{white_pfp}}"
+  var blackPfp = "{{black_pfp}}"
+</script>
 <div class="row">
     <div class="col-3">
         <!-- player info cards -->
         <div class="card player-card">
             <div class="m-3">
                     <!-- player pfp -->
-                    <img src="{{url_for('static', filename='img/logo.jpg')}}" class="pfp"> 
+                    <a class="opponent-stat" target="_blank"><img class="pfp opponent-pfp"></a>
                     <!-- Opponent or player username and rating --> 
                     <h5 class="card-title player-name m-2" id="opponent-name">Searching...</h5>
                     <h6 class="card-subtitle player-rating ms-1 fs-3 d-inline-block" id="opponent-rating"> 1796</h6>
@@ -48,7 +53,7 @@
                 </div>
                 <span>
                   <!-- Second player pfp -->
-                    <img src="{{url_for('static', filename='img/logo.jpg')}}" class="pfp" > 
+                    <a class="user-stat" target="_blank"><img class="pfp user-pfp"></a> 
                   <!-- Second player username  -->
                     <h5 class="card-title player-name m-2" id="user-name">Searching....</h5>
                   <!-- Second player rating -->

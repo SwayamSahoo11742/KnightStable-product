@@ -1,0 +1,46 @@
+/* This file is used for: Stats pages, 
+Specifics : "stats.html" */
+
+/* Stat card */
+
+.stat-card{
+    max-height: 100%;
+    max-width: 60%;
+    margin-left: 20%;
+}
+/* Player pfp */
+.stat-img{
+    width: 20%;
+    height: auto;
+    border-radius: 50%;
+    border: 1px solid black;
+}
+
+/* About text */
+.chart{
+    width:100%;
+    max-width:100%;
+}
+
+/* Stats Btn */
+.stats-btn{
+    width: 31%;
+    background-color: transparent;
+    border: 0px;
+    border-bottom: 1px gray solid;
+}
+
+.stats-btn:hover{
+    background-color: #cfcfcf;
+}
+
+/* Second Stat card */
+.stat-2-card{
+    min-height: 300%;
+}
+
+/* Stat subtitles */
+
+.stat-title{
+    color:#3d3d3d ;
+}

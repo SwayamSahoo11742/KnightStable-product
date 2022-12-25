@@ -18,7 +18,7 @@ def save_pfp(pfp, app):
     path = os.path.join(app.root_path, 'static/img/pfp', filename)
 
     # Deciding output size
-    output_size = (150,150)
+    output_size = (221,228)
     print(output_size)
     # Opening image with pillow
     i = Image.open(pfp)

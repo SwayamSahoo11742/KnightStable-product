@@ -1,3 +1,6 @@
+/* This file is used for: Account pages, 
+Specifics : "account.html" */
+
 /* password fields */
 .pass-field{
     width: 60%;
@@ -13,6 +16,5 @@
 
 .pfp{
     width: 20%;
-    border-radius: 50%;
     border: black solid 1px;
 }
