@@ -3,6 +3,9 @@ var table = document.querySelector(".table")
 var timers = document.querySelectorAll(".timer")
 var userName = document.querySelector("#user-name")
 var opponentName = document.querySelector("#opponent-name")
+var opponentPfp = document.querySelector(".opponent-pfp")
+var userPfp = document.querySelector(".user-pfp")
+var pfps = document.querySelectorAll(".pfp")
 var userRating = document.querySelector("#user-rating")
 var ratings = document.querySelectorAll(".player-rating")
 var opponentRating = document.querySelector("#opponent-rating")
@@ -21,6 +24,8 @@ var resignConfirm = document.querySelector("#resign-btn")
 var abort = document.querySelector("#abort")
 var abortModal = new bootstrap.Modal(document.querySelector("#abort-modal"))
 var timeStop = false
+var userStat = document.querySelector(".user-stat")
+var opponentStat = document.querySelector(".opponent-stat")
 // ----------------------------------------Event Listeners-----------------------------------------------------
 // If wanting to reisng
 resignBtn.addEventListener("click", function() {
@@ -143,7 +148,11 @@ socket.on("message", (data) => {
     console.log("here o am")
     // Create game data so other functions can access
     gameData = data
-    console.log(gameData)
+    console.log(whitePfp)
+    console.log(blackPfp)
+    console.log(opponentPfp)
+    console.log(userPfp)
+    console.log(pfps)
     // Give your side you user name
     userName.innerText = data.selfname
     // if black
@@ -159,6 +168,10 @@ socket.on("message", (data) => {
         timers[1].setAttribute("id", "black-timer")
         ratings[0].setAttribute("id", "white-rating")
         ratings[1].setAttribute("id", "black-rating")
+        pfps[0].src = whitePfp
+        pfps[1].src = blackPfp
+        userStat.href = "/user/" + gameData.black
+        opponentStat.href = "/user/" + gameData.white
         // if white
     } else {
         // self's color declared as white
@@ -170,6 +183,10 @@ socket.on("message", (data) => {
         timers[0].setAttribute("id", "black-timer")
         ratings[1].setAttribute("id", "white-rating")
         ratings[0].setAttribute("id", "black-rating")
+        pfps[1].src =  whitePfp
+        pfps[0].src=  blackPfp
+        userStat.href = "/user/" + gameData.white
+        opponentStat.href = "/user/" + gameData.black
     }
     // using the ids previously set to show the player data accordingly
     document.querySelector("#black-rating").innerText = data.black_rating

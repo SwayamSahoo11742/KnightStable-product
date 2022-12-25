@@ -18,7 +18,7 @@ html,body
 .header-pfp{
     width: 50px;
     height: auto;
-    border-radius: 50%;
+    border: white 2px solid;
  }
 /* Social Logos */
 .social-logo{

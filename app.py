@@ -1,4 +1,3 @@
-
 import sqlite3
 from flask import Flask, flash, redirect, render_template, request, session
 from flask_session import Session
@@ -52,7 +51,6 @@ def connect(data):
     data["selfname"] = session["username"]
     room = session["curr_game"]["game_id"]
     join_room(room)
-    print(data)
     send(data, namespace="/play")
 
 
@@ -94,6 +92,7 @@ def game_over(gameinfo):
         loser_mod = gameinfo["white"]
         # Winner is winner
         winner = gameinfo["data"][gameinfo["winner"]]
+        result = "0-1"
     # If draw or aborted
     elif gameinfo["winner"] == "none":
         # This section doesnt make sense, but for efficiency of code,
@@ -104,6 +103,7 @@ def game_over(gameinfo):
         loser_mod = gameinfo["white"]
         winner = gameinfo["data"]["black"]
         winner_mod = gameinfo["black"]
+        result = "1-1"
     # If white winner
     else:
         # Loser is black
@@ -113,16 +113,16 @@ def game_over(gameinfo):
         loser_mod = gameinfo["black"]
         # Winner is winner
         winner = gameinfo["data"][gameinfo["winner"]]
+        result = "1-0"
     # Setting game status to end and pgn to appropriate pgn
     cursor.execute(
-        "UPDATE ksgame SET status = 'ended', pgn = ? WHERE game_id = ?",
-        (gameinfo["pgn"], gameinfo["data"]["game_id"]),
+        "UPDATE ksgame SET status = 'ended', pgn = ?, result = ? WHERE game_id = ?",
+        (gameinfo["pgn"], result, gameinfo["data"]["game_id"]),
     )
     # Setting winner's rating
     winner_rating = cursor.execute(
         "SELECT rating FROM users WHERE username = ?", (winner,)
     ).fetchone()[0]
-    print(winner_rating)
     cursor.execute(
         "UPDATE users SET rating = ? WHERE username = ?",
         (winner_rating + winner_mod, winner),
@@ -230,7 +230,7 @@ def register():
         # Updating user's session with needed info
         session["user_id"] = user_rows[0]["id"]
         session["username"] = user_rows[0]["username"]
-        session["pfp"] = "static\img\pfp/" + user_rows[0]["pfp"]
+        session["pfp"] = "/static\img\pfp/" + user_rows[0]["pfp"]
         session["about"] = user_rows[0]["about"]
         # Cloding db
         users.close()
@@ -272,7 +272,7 @@ def login():
         session["user_id"] = user_rows[0]["id"]
         session["username"] = user_rows[0]["username"]
         session["logged"] = True
-        session["pfp"] = "static\img\pfp/" + user_rows[0]["pfp"]
+        session["pfp"] = "/static\img\pfp/" + user_rows[0]["pfp"]
         session["about"] = user_rows[0]["about"]
         flash("Logged in Successfully")
         return redirect("/")
@@ -443,8 +443,30 @@ def recommended():
 @app.route("/play/<id>")
 def game(id):
     # Seems empty, because matchmaking and settings handling is done at "/play", where they select the settinsg they want and matchmade there as well
+
+    # Connect to db
+    users = sqlite3.connect(db)
+    cursor = users.cursor()
+    # Getting pfps
+    white_pfp = (
+        "/static/img/pfp/"
+        + cursor.execute(
+            "SELECT pfp FROM users WHERE username = ?", (session["curr_game"]["white"],)
+        ).fetchone()[0]
+    )
+    black_pfp = (
+        "/static/img/pfp/"
+        + cursor.execute(
+            "SELECT pfp FROM users WHERE username = ?", (session["curr_game"]["black"],)
+        ).fetchone()[0]
+    )
     # Rendering template
-    return render_template("game.html", logged=attempt(session, "logged"))
+    return render_template(
+        "game.html",
+        logged=attempt(session, "logged"),
+        white_pfp=white_pfp,
+        black_pfp=black_pfp,
+    )
 
 
 # Page where the settings and matchmaking is handled
@@ -472,7 +494,7 @@ def play():
         # Retrieving all the games that match user's specifications and are searching
         pending_games = cursor.execute(
             "SELECT game_id FROM ksgame WHERE status = 'searching' AND time = ? AND rated = ? AND white != ? LIMIT 1",
-            (time, rated, session["user_id"]),
+            (time, rated, session["username"]),
         )
         # Turning into a dict object
         pending_games = [dict(row) for row in pending_games]
@@ -482,7 +504,7 @@ def play():
             # Add user to as black and set staus to ongoing
             cursor.execute(
                 "UPDATE ksgame SET black = ?, status = 'ongoing', black_rating = ? WHERE game_id = ?",
-                (session["user_id"], rating, pending_games[0]["game_id"]),
+                (session["username"], rating, pending_games[0]["game_id"]),
             )
             # Commit
             games.commit()
@@ -491,18 +513,6 @@ def play():
                 "SELECT * FROM ksgame WHERE game_id = ?", (pending_games[0]["game_id"],)
             )
             curr_game = [dict(row) for row in curr_game][0]
-            # Turning player id's to username
-            blackuser = cursor.execute(
-                "SELECT username FROM users WHERE id = ?", (curr_game["black"],)
-            )
-            blackuser = [dict(row) for row in blackuser][0]["username"]
-            whiteuser = cursor.execute(
-                "SELECT username FROM users WHERE id = ?", (curr_game["white"],)
-            )
-            whiteuser = [dict(row) for row in whiteuser][0]["username"]
-            # Updating curr_game with the correct names
-            curr_game["black"] = blackuser
-            curr_game["white"] = whiteuser
 
             # Saving to cookie session
             session["curr_game"] = curr_game
@@ -513,7 +523,7 @@ def play():
             # Adding user as white if no pending available, and adding the game params with it
             cursor.execute(
                 "INSERT INTO ksgame (white, status, time, rated, white_rating) VALUES (?,?,?,?,?)",
-                (session["user_id"], "searching", time, rated, rating),
+                (session["username"], "searching", time, rated, rating),
             )
             # Adding the link to the db
             cursor.execute(
@@ -546,18 +556,6 @@ def play():
                 "SELECT * FROM ksgame WHERE game_id = ?", (cursor.lastrowid,)
             )
             curr_game = [dict(row) for row in curr_game][0]
-            # Turning player id's to username
-            blackuser = cursor.execute(
-                "SELECT username FROM users WHERE id = ?", (curr_game["black"],)
-            )
-            blackuser = [dict(row) for row in blackuser][0]["username"]
-            whiteuser = cursor.execute(
-                "SELECT username FROM users WHERE id = ?", (curr_game["white"],)
-            )
-            whiteuser = [dict(row) for row in whiteuser][0]["username"]
-            # Updating curr_game with the correct names
-            curr_game["black"] = blackuser
-            curr_game["white"] = whiteuser
 
             # Saving to cookie session
             session["curr_game"] = curr_game
@@ -595,6 +593,7 @@ def profile():
         # Redirect to same page
         return redirect("/profile")
 
+
 # Account settings page
 @app.route("/account", methods=["GET", "POST"])
 def account():
@@ -613,9 +612,11 @@ def account():
             # Get pfp file
             pfp = request.files.get("pfp")
             # Save it
-            pfp_file = save_pfp(pfp,app)
+            pfp_file = save_pfp(pfp, app)
             # Update db
-            cursor.execute("UPDATE users SET pfp = ? WHERE id = ?", (pfp_file, session["user_id"]))
+            cursor.execute(
+                "UPDATE users SET pfp = ? WHERE id = ?", (pfp_file, session["user_id"])
+            )
             # Update Session
             session["pfp"] = "static\img\pfp/" + pfp_file
 
@@ -626,16 +627,18 @@ def account():
             users.close()
 
             # Redirect back
-            flash("Profile Picture Updated")
+            flash("Profile Picture Updated", "alert-success")
             return redirect("/account")
-        
+
         # If username change
         if request.form.get("submit") == "name-change":
             # Checking Passwords
             # Getting inpted password
             password = request.form.get("password")
             # Getting real password
-            selfpass = cursor.execute("SELECT hash FROM users WHERE id = ?", (session["user_id"],)).fetchone()[0]
+            selfpass = cursor.execute(
+                "SELECT hash FROM users WHERE id = ?", (session["user_id"],)
+            ).fetchone()[0]
 
             # IF passwords did not match
             if not check_password_hash(selfpass, password):
@@ -649,8 +652,11 @@ def account():
                 session["username"] = request.form.get("username")
 
                 # Update db
-                cursor.execute("UPDATE users SET username = ? WHERE id = ?", (request.form.get("username"), session["user_id"]))
-                
+                cursor.execute(
+                    "UPDATE users SET username = ? WHERE id = ?",
+                    (request.form.get("username"), session["user_id"]),
+                )
+
                 # Commit changes
                 users.commit()
 
@@ -668,7 +674,9 @@ def account():
             # Getting inputed password
             password = request.form.get("current-password")
             # Getting real password
-            selfpass = cursor.execute("SELECT hash FROM users WHERE id = ?", (session["user_id"],)).fetchone()[0]
+            selfpass = cursor.execute(
+                "SELECT hash FROM users WHERE id = ?", (session["user_id"],)
+            ).fetchone()[0]
 
             # IF passwords did not match
             if not check_password_hash(selfpass, password):
@@ -688,7 +696,10 @@ def account():
                     # Generate password hash
                     hashed_pass = generate_password_hash(new_pass)
                     # Update password
-                    cursor.execute("UPDATE users SET hash = ? WHERE id = ?", (hashed_pass, session["user_id"]))
+                    cursor.execute(
+                        "UPDATE users SET hash = ? WHERE id = ?",
+                        (hashed_pass, session["user_id"]),
+                    )
 
                     # Commit changes
                     users.commit()
@@ -696,17 +707,102 @@ def account():
                     users.close()
                     # Flash message of succession
                     flash("Password changed", "alert-success")
-                    # Redirect 
+                    # Redirect
                     return redirect("/account")
-                
+
                 # If did not match
                 else:
                     # Close db
                     users.close()
                     # Flash message of not succession
                     flash("Password did not match", "alert-danger")
-                     # Redirect 
+                    # Redirect
                     return redirect("/account")
+
+
+# Stats Page
+@app.route("/user/<name>", methods=["GET", "POST"])
+def stat(name):
+    # Connect to db
+    users = sqlite3.connect(db)
+    # Cursor object
+    cursor = users.cursor()
+
+    # Checking if user exists
+    count = cursor.execute(
+        "SELECT COUNT(username) FROM users WHERE username = ?", (name,)
+    ).fetchone()[0]
+    if count == 0:
+        return redirect("/user/" + session["username"])
+
+    # Getting White stats
+    w_wins = cursor.execute(
+        "SELECT COUNT(game_id) FROM ksgame WHERE white = ? AND result = ?",
+        (name, "1-0"),
+    ).fetchone()[0]
+    w_loss = cursor.execute(
+        "SELECT COUNT(game_id) FROM ksgame WHERE white = ? AND result = ?",
+        (name, "0-1"),
+    ).fetchone()[0]
+    w_draw = cursor.execute(
+        "SELECT COUNT(game_id) FROM ksgame WHERE white = ? AND result = ?",
+        (name, "1-1"),
+    ).fetchone()[0]
+    white_stats = [w_wins, w_loss, w_draw]
+
+    # Getting Black Stats
+    b_wins = cursor.execute(
+        "SELECT COUNT(game_id) FROM ksgame WHERE black = ? AND result = ?",
+        (name, "0-1"),
+    ).fetchone()[0]
+    b_loss = cursor.execute(
+        "SELECT COUNT(game_id) FROM ksgame WHERE black = ? AND result = ?",
+        (name, "1-0"),
+    ).fetchone()[0]
+    b_draw = cursor.execute(
+        "SELECT COUNT(game_id) FROM ksgame WHERE black = ? AND result = ?",
+        (name, "1-1"),
+    ).fetchone()[0]
+    black_stats = [b_wins, b_loss, b_draw]
+
+    # Getting all Stats
+    all_wins = w_wins + b_wins
+    all_loss = w_loss + b_loss
+    all_draw = w_draw + b_draw
+    all_stats = [all_wins, all_loss, all_draw]
+
+    # Ratng points
+    ratings = cursor.execute(
+        "SELECT (CASE WHEN white = ? THEN white_rating ELSE black_rating END) as rating FROM ksgame WHERE black = ? OR white = ? ORDER BY datetime;",
+        (name, name, name),
+    ).fetchall()
+    ratings = [x[0] for x in ratings]
+
+    # Getting about text
+    about = cursor.execute(
+        "SELECT about FROM users WHERE username = ?", (name,)
+    ).fetchone()[0]
+
+    # Getting games
+    games = cursor.execute("SELECT white, black, result, pgn FROM ksgame WHERE black = ? OR white = ? LIMIT 10", (name,name)).fetchall()
+    print(games)
+
+    # Closing db
+    users.close()
+
+    return render_template(
+        "stat.html",
+        logged=attempt(session, "logged"),
+        name=name,
+        white_stats=white_stats,
+        black_stats=black_stats,
+        all_stats=all_stats,
+        ratings=ratings,
+        current_rating=ratings[len(ratings) - 1],
+        about=about,
+        games = games
+    )
+
+
 if __name__ == "__main__":
     socketio.run(app)
-
