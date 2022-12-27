@@ -163,7 +163,7 @@ def game_over(gameinfo):
 def register():
     if request.method == "GET":
         # returninf template
-        return render_template("register.html", logged=attempt(session, "logged"))
+        return render_template("register.html")
     else:
         # Connecting to db
         users = sqlite3.connect(db)
@@ -243,7 +243,7 @@ def register():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "GET":
-        return render_template("login.html", logged=attempt(session, "logged"))
+        return render_template("login.html")
     else:
         users = sqlite3.connect(db)
         users.row_factory = sqlite3.Row
@@ -284,21 +284,43 @@ def login():
 @app.route("/logout", methods=["GET", "POST"])
 def logout():
     if request.method == "GET":
-        return render_template("logout.html", logged=attempt(session, "logged"))
+        return render_template("logout.html")
     else:
         # Logging user out
         session["logged"] == False
         # Clearing login session
         session.clear()
-        return redirect("/")
+        return redirect("/about")
 
 
 # Home page
 @app.route("/")
 def home():
+    # Checking if user is logged
+    if "logged" not in session:
+        flash("You should log in", "alert-danger")
+        return redirect("/about")
+    # Connecting to db
+    users = sqlite3.connect(db)
+    # Row Factory
+    users.row_factory = sqlite3.Row
+    # Cursor object
+    cursor = users.cursor()
 
-    return render_template("about.html", logged=attempt(session, "logged"))
+    # Recent Games
+    games = cursor.execute("SELECT white, black, result, pgn FROM ksgame WHERE white = ? OR black = ? ORDER BY datetime DESC LIMIT 5", (session["username"], session["username"]))
+    games = [dict(x) for x in games]
+    
+    # Rating 
+    rating = dict(cursor.execute("SELECT rating FROM users WHERE username = ?", (session["username"],)).fetchone())["rating"]
 
+    # Rending template
+    return render_template("home.html", games=games, rating=rating)
+
+# About Page
+@app.route("/about")
+def about():
+    return render_template("about.html")
 
 # Search Page
 @app.route("/search", methods=["POST", "GET"])
@@ -306,7 +328,7 @@ def search():
     # If get render template
     if request.method == "GET":
 
-        return render_template("search.html", logged=attempt(session, "logged"))
+        return render_template("search.html")
     else:
         # Connecting to server
         games = sqlite3.connect(db)
@@ -344,9 +366,7 @@ def search():
             result = [dict(row) for row in valid_games]
 
             cursor.close()
-            return render_template(
-                "search.html", games=result, logged=attempt(session, "logged")
-            )
+            return render_template("search.html", games=result)
         else:
             # Defining Query
             query = "SELECT * FROM games WHERE black LIKE ? AND white LIKE ? AND moves LIKE ? AND opening LIKE ? AND white_elo <= ? AND white_elo >= ? LIMIT(50)"
@@ -369,7 +389,6 @@ def search():
             cursor.close()
             return render_template(
                 "search.html",
-                logged=attempt(session, "logged"),
                 games=results,
                 black_user=black_user,
                 white_user=white_user,
@@ -387,7 +406,7 @@ def openings():
     # Checking if request is GET
     if request.method == "GET":
         # Render template
-        return render_template("openings.html", logged=attempt(session, "logged"))
+        return render_template("openings.html")
     else:
         # Connect to db
         games = sqlite3.connect(db)
@@ -423,7 +442,6 @@ def openings():
         # Returning template
         return render_template(
             "openings.html",
-            logged=attempt(session, "logged"),
             openings=openings,
             color=color.capitalize(),
             moves=moves,
@@ -435,7 +453,7 @@ def openings():
 @app.route("/recommended")
 def recommended():
     # This is a static template, therefore only returning template
-    return render_template("recommended.html", logged=attempt(session, "logged"))
+    return render_template("recommended.html")
 
 
 # Page where the game playing will be commenced
@@ -463,7 +481,6 @@ def game(id):
     # Rendering template
     return render_template(
         "game.html",
-        logged=attempt(session, "logged"),
         white_pfp=white_pfp,
         black_pfp=black_pfp,
     )
@@ -474,7 +491,7 @@ def game(id):
 def play():
     # If GET request, render template
     if request.method == "GET":
-        return render_template("play.html", logged=attempt(session, "logged"))
+        return render_template("play.html")
     # If POST
     else:
         # Get specified customizations
@@ -570,7 +587,7 @@ def profile():
     # If Just visiting
     if request.method == "GET":
         # Return the template
-        return render_template("profile.html", logged=attempt(session, "logged"))
+        return render_template("profile.html")
     # If changes applied
     else:
         # Get about text
@@ -600,7 +617,7 @@ def account():
     # IF get
     if request.method == "GET":
         # Render
-        return render_template("account.html", logged=attempt(session, "logged"))
+        return render_template("account.html")
     else:
         # Connect to db
         users = sqlite3.connect(db)
@@ -777,6 +794,8 @@ def stat(name):
         (name, name, name),
     ).fetchall()
     ratings = [x[0] for x in ratings]
+    if ratings == []:
+        ratings = [100]
 
     # Getting about text
     about = cursor.execute(
@@ -784,15 +803,15 @@ def stat(name):
     ).fetchone()[0]
 
     # Getting games
-    games = cursor.execute("SELECT white, black, result, pgn FROM ksgame WHERE black = ? OR white = ? LIMIT 10", (name,name)).fetchall()
-    print(games)
-
+    games = cursor.execute(
+        "SELECT white, black, result, pgn FROM ksgame WHERE black = ? OR white = ? LIMIT 10",
+        (name, name),
+    ).fetchall()
     # Closing db
     users.close()
 
     return render_template(
         "stat.html",
-        logged=attempt(session, "logged"),
         name=name,
         white_stats=white_stats,
         black_stats=black_stats,
@@ -800,8 +819,48 @@ def stat(name):
         ratings=ratings,
         current_rating=ratings[len(ratings) - 1],
         about=about,
-        games = games
+        games=games,
     )
+
+
+@app.route("/members", methods=["GET", "POST"])
+def members():
+    # If GET request
+    if request.method == "GET":
+        # Connecting to db
+        members = sqlite3.connect(db)
+        members.row_factory = sqlite3.Row
+        # Cursor object
+        cursor = members.cursor()
+
+        # Getting top 10 players
+        users = cursor.execute(
+            "SELECT username, rating FROM users ORDER BY rating DESC LIMIT 10"
+        ).fetchall()
+        users = [dict(x) for x in users]
+
+        members.close()
+        # Return template
+        return render_template("members.html", users=users)
+    # If Post request
+    else:
+        username = request.form.get("username")
+        # Connecting to db
+        members = sqlite3.connect(db)
+        members.row_factory = sqlite3.Row
+        # Cursor object
+        cursor = members.cursor()
+
+        # Getting top 10 players
+        users = cursor.execute(
+            "SELECT username, rating FROM users WHERE username LIKE ?",
+            ("%" + username + "%",),
+        ).fetchall()
+        users = [dict(x) for x in users]
+
+        # Closing db
+        members.close()
+        return render_template("members.html", users=users)
 
 
 if __name__ == "__main__":

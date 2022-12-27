@@ -37,6 +37,7 @@ Specifics : "stats.html" */
 /* Second Stat card */
 .stat-2-card{
     min-height: 300%;
+    max-height: 1000% ;
 }
 
 /* Stat subtitles */
@@ -44,3 +45,9 @@ Specifics : "stats.html" */
 .stat-title{
     color:#3d3d3d ;
 }
+
+/* Horizontal rule */
+.hr{
+    color: black;
+}
+

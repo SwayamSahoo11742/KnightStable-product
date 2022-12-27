@@ -94,7 +94,7 @@ new Chart("rating-graph", {
   options: {
     legend: {display: false},
     scales: {
-      yAxes: [{ticks: {min: 1, max:xValues.lenght}}],
+      yAxes: [{ticks: {min: 100, max:xValues.lenght}}],
     }
   }
 });

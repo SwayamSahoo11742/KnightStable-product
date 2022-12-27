@@ -6,6 +6,11 @@ Specifics : "openings.html", "search.html" */
     background-color: #090038;
 }
 
+/* nav links */
+.nav-link{
+    font-size: larger;
+}
+
 html,body
 {
     width: 100%;
@@ -19,6 +24,7 @@ html,body
     width: 50px;
     height: auto;
     border: white 2px solid;
+    background-color: transparent !important;
  }
 /* Social Logos */
 .social-logo{
@@ -67,10 +73,21 @@ body{
 
 /* Navbar */
 .navbar{
-    background-color:#090038;
-    padding-top: 50px
+    padding-top: 50px;
 }
 
+.nav-color{
+    background-image: url("/static/img/download.jpg");
+    background-size: cover;
+}
+
+.nav-contain{
+/* From https://css.glass */
+    background: rgba(141, 114, 225, 0.4);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(16.1px);
+}
 /* brand title */
 .brand{
     max-width: 80.5%;
@@ -167,4 +184,7 @@ Specifics: "openings.html" */
     margin: 3% 3% 3% 47%;
  }
 
+ #homepage-logo{
+    max-width: 15%;
+ }
 

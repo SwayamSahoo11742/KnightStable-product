@@ -1,3 +1,11 @@
+// Color pallete
+var pallete = {"nav": "#8D72E1", "bg": "#F1F6F5", "font": "#000000", "cards": "#ebfaee", "navLinks": "#252243", "btns": "#B9E0FF", "btnsFont": "#170055 "}
+
+
+
+var options = document.getElementsByTagName("option")
+var navLinks = document.querySelectorAll(".nav-link")
+var navs = document.querySelectorAll(".nav-color")
 var body = document.querySelector("body")
 var offHeader = document.querySelector(".offcanvas-header")
 var offBody = document.querySelector(".offcanvas-body")
@@ -7,58 +15,52 @@ var filters = document.querySelectorAll(".search-filter-option")
 var filterBar = document.querySelector(".navbar-filter")
 var cards = document.querySelectorAll(".card")
 
-//implementing darkmode
-modeBtn.addEventListener("click",function(){
-    if (modeBtn.innerText == "Dark Mode"){
-            modeBtn.innerText = "Light Mode"
-            modeBtn.style.backgroundColor = "white"
-            modeBtn.style.color = "#131417"
-            body.style.color = "white"
-            body.style.backgroundColor = "#131417"
-            filters.forEach(option => {
-                option.style.color = "white"
-                option.style.backgroundColor = "#1c1b18"
-                option.style.borderColor = "white"
-                option.style.borderWidth = "1px"
-            })
-            offBody.style.backgroundColor = "#131417"
-            offHeader.style.backgroundColor = "#131417"
-            filterBar.style.backgroundColor = "#131417"
-            btns.forEach(btn => {
-                btn.style.backgroundColor = "#292b2c"
-                btn.style.color = "white"
-                btn.style.borderColor = "white"
-            })
-            cards.forEach( card =>{
-                card.style.backgroundColor = "#292b2c"
-                card.style.boxShadow = "2px 2px 2px 1px rgba(255, 255, 255, 0.4)"
-            })        
-        }
 
-    else {
-            modeBtn.innerText = "Dark Mode"
-            modeBtn.style.backgroundColor = "black"
-            modeBtn.style.color = "white"
-            body.style.color = "black"
-            body.style.backgroundColor = "white"
-            filters.forEach(option => {
-                option.style.color = "black"
-                option.style.backgroundColor = "white"
-                option.style.borderColor = "black"
-                option.style.borderWidth = "1px"
-            })
-            offBody.style.backgroundColor = "white"
-            offHeader.style.backgroundColor = "white"
-            filterBar.style.backgroundColor = "white"
-            btns.forEach(btn => {
-                btn.style.backgroundColor = "white"
-                btn.style.color = "black"
-                btn.style.borderColor = "black"
-            })
-            cards.forEach( card =>{
-                card.style.backgroundColor = "white"
-                card.style.boxShadow = "2px 2px 2px 1px rgba(0, 0, 0, 0.2)"
-            })   
-        }
+// Table rows
+
+var trs = document.querySelectorAll("tr")
+trs.forEach(tr =>{
+    tr.style.color = pallete.font
 })
 
+// Dropdown toggle
+
+document.querySelector(".dropdown-toggle").style.backgroundColor = pallete.nav
+
+// Coloring nav-items
+
+navLinks.forEach(item =>{
+    item.style.color = pallete.navLinks
+})
+
+// Colring nav
+navs.forEach(nav =>{
+    nav.style.backgroundColor = pallete.nav
+})
+
+// Coloring body
+body.style.color = pallete.font
+body.style.backgroundColor = pallete.bg
+
+// Coloring filter options
+filters.forEach(option => {
+    option.style.color = pallete.bg
+    option.style.backgroundColor = pallete.bg
+    option.style.borderColor = "white"
+    option.style.borderWidth = "1px"
+})
+
+// Coloring cards
+cards.forEach( card =>{
+    card.style.backgroundColor = pallete.cards
+})        
+
+
+// Colring btns
+btns.forEach(btn => {
+    btn.style.backgroundColor = pallete.btns
+    btn.style.color = pallete.btnsFont
+})
+  
+// Colring offbody canvas
+filterBar.style.backgroundColor = pallete.bg

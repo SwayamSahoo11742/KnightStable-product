@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <link rel = "icon" href = "{{url_for('static', filename='img/headLogo.jpg')}}" type = "image/x-icon">
+        <link rel = "icon" href = "{{url_for('static', filename='img/logo.png')}}" type = "image/x-icon">
         <!-- Scripts  -->
         <!-- JQuery -->
         <script
@@ -29,11 +29,13 @@
     <body>
 
         <!-- NAV bar -->
+        <div class="nav-color">
+        <div class="nav-contain">
         <nav class="navbar navbar-expand-lg">
 
                 <!--brand-->
 
-                <a class="nav-link brand ms-5" href="/"><img class="nav-logo" src="{{url_for('static', filename='img/navlogo.jpg')}}"></a>
+                <a class="nav-link brand ms-5" href="/"><img class="nav-logo" src="{{url_for('static', filename='img/logo.png')}}"></a>
                 <ul class="navbar-nav mb-2 mb-lg-0">
                     <!-- Home -->
                     <li class="nav-item">
@@ -48,7 +50,7 @@
                         <a class="nav-link ms-5" href="/openings">Opening</a>
                     </li>
                     <!-- register -->
-                    {% if logged == false %}
+                    {% if session['logged'] is not defined %}
                     <li>
                         <a class="nav-link ms-5" href="/register"> Register</a>
                     </li>
@@ -57,10 +59,7 @@
                         <a class="nav-link ms-5" href="/login"> Login</a>
                     </li>
                     {%else%}
-                    <!-- Logout -->
-                    <li>
-                        <a class="nav-linkc ms-5" href="/logout"> Logout </a>
-                    </li>
+
                     <!-- Play -->
                     <li>
                         <a class="nav-link ms-5" href="/play">Play</a>
@@ -82,14 +81,23 @@
                             </button>
                             <!-- drodown options -->
                             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+
                               <!-- Name -->
-                              <div class="dropdown-item">{{session["username"]}}</div>
+                              <a class="dropdown-item" href="/user/{{session['username']}}">{{session["username"]}}</a>
+
                               <!-- Stats link -->
                               <a class="dropdown-item" href="/user/{{session['username']}}">Stats</a>
+
                               <!-- Profile Link -->
                               <a class="dropdown-item" href="/profile">Profile</a>
+
                               <!-- Account settings link -->
                               <a class="dropdown-item" href="/account">Account Settings</a>
+
+                              <hr class="dropdown-divider">
+
+                              <!-- Logout -->
+                              <a class="btn btn-danger pe-5 ms-3" href="/logout"> Logout</a>
                             </div>
                           </div>
                         
@@ -97,19 +105,23 @@
                     {%endif%}
                 </ul>
         </nav>
+        </div>
+        </div>
                 <!-- Main content block -->
                 {% block main%}{%endblock%}
 
     <div id="footer">
             
             <!--brand-->
+        <div class="nav-color">        
+        <div class="nav-contain">
         <nav class="navbar navbar-expand-lg">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
                 <li>
                 <!-- About-->
                 <li class="nav-item">
-                    <a class="nav-link" href="/">About</a>
+                    <a class="nav-link" href="/about">About</a>
                 </li>
                 <!-- Recommended-->
                 <li class="nav-item">
@@ -117,7 +129,12 @@
                 </li>
                 <!-- Contact -->
                 <li>
-                    <a class="nav-link"> Contact Us</a>
+                    <a class="nav-link" href="#"> Contact Us</a>
+                </li>
+                <!-- Members -->
+                <li>
+                    <a class="nav-link" href="/members" >Members</a>
+                </li>
                 <!-- Social links -->
                 <!-- YouTube -->
                 <li>
@@ -137,6 +154,8 @@
                 </li>
             </ul>
         </nav>
+    </div>
+    </div>
     </div>
 
         <!-- main js  -->

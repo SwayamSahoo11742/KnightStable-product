@@ -2,10 +2,78 @@
 {%extends "layout.html"%}
 
 <!-- Title -->
-{%block title} Home {%endblock%}
+{%block title%} Home {%endblock%}
 
-
+<!-- Specific links/scripts -->
+{% block links%}
+<link href="{{url_for('static', filename='css/home.css')}}" rel="stylesheet">
+{%endblock%}
 
 {%block main%}
 
+<div class="row">
+    <div class="col-7">
+        <!-- Recent Games -->
+        <div class="recent-games ms-5">
+            <h3 class="ms-3 mt-5"> Your Recent Games </h3>
+            <hr class="border border-dark border-2">
+            <table class="table mt-5 table-striped ">
+                <thead>
+                    <tr>
+                        <!-- Table Heading -->
+                        <th scope="col"> No.</th>
+                        <th scope="col"> White</th>
+                        <th scope="col"> Black</th>
+                        <th scope="col"> Result</th>
+                        <th scope="col"> PGN</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Looping through and adding games -->
+                    {%for i in range(games | length)%}
+                    <tr class="recent-table-pgn">
+                        <td>{{i+1}}</td>
+                        <td>{{games[i]["white"]}}</td>
+                        <td>{{games[i]["black"]}}</td>
+                        <td>{{games[i]["result"]}}</td>
+                        <td >{{games[i]["pgn"]}}</td>
+                    </tr>
+                    {%endfor%}
+                </tbody>
+            </table>
+            <p class="text-danger ms-3">NOTE: Only the last 5 games are stored</p>
+        </div>
+    </div>
+
+    <!-- Status card -->
+
+    <div class="col-5">
+        <div class="card status-card ms-5" >
+            <!-- Header -->
+            <div class="card-header text-center fs-3"> You </div>
+            <!-- Body -->
+            <div class="card-body">
+                <!-- pfp -->
+                <img src="{{session['pfp']}}" alt="PFP" class="status-pfp">
+                <!-- Username -->
+                <span class="ms-5 fs-2">{{session["username"]}}</span>
+                
+                <!-- Rating -->
+                <div class="fs-3 mt-4">Rating: {{rating}}</div>
+
+                <!-- About me -->
+                <div class="fs-3 mt-2">About Me:</div>
+                <div> {{session["about"]}}</div>
+            </div>
+            <div class="card-footer">
+                <div>
+                    <a href="/user/{{session['username']}}" class="btn btn-primary opt-btns" >Stats</a> 
+                    <a href="/profile" class="btn btn-primary opt-btns" > Profile </a>
+                    <a href="/account" class="btn-primary btn opt-btns"> Account</a>
+                    <a class="btn btn-success fs-3 play-btn mt-2 mb-2" href="/play">Play</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {%endblock%}

@@ -1,0 +1,44 @@
+/* This file is used for: Home Page
+Specifics: "home.html*/
+
+/* Recent games table */
+
+.recent-games{
+    width: 90%;
+}
+
+/* Status card */
+.status-card{
+    margin-top: 19%;
+    max-height: 5000%;
+    min-height: 30%;
+    min-width: 85%;
+
+}
+
+
+
+/* Status-card-pfp */
+.status-pfp{
+    width: 100px;
+
+}
+
+
+/* Options buttons */
+.opt-btns{
+    width: 30%;
+    margin: 1.3%;
+}
+
+/* Recent games table pgn */
+.recent-table-pgn{
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+/* Play btn */
+
+.play-btn{
+    width: 100%;
+}

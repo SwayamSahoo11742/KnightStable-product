@@ -26,8 +26,9 @@
 <div class="card account-card">
     <!-- Change Profile Picture -->
     <div>
+        <h2 class="mt-5 ms-5">Change Profile Picture</h2>
+        <hr class="border border-2 border-info ms-0">
         <form method="POST" class="ms-5" enctype="multipart/form-data">
-            <h2>Change Profile Picture</h2>
             <img src="{{session['pfp']}}" class="mt-3 mb-5 pfp">
             <input type="file" class="btn btn-primary ms-5" accept="image/png, image/jpeg" name="pfp" required>
             <div>
@@ -39,7 +40,8 @@
     <div>
         <!-- Username change field -->
         <form method="POST">
-            <h2 class="m-5"> Change Username</h2>
+            <h2 class="m-5 mb-0"> Change Username</h2>
+            <hr class="border border-2 border-info">
             <div class="ms-5 mt-3 fs-4">New Username:</div>
             <input type="text" class="fs-4 ms-5" value="{{session['username']}}" name="username" minlength="4" required>
             <!-- Password Change field -->
@@ -53,7 +55,8 @@
     </div>
     <!-- Change Password -->
     <div>
-        <h2 class="m-5">Change Password</h2>
+        <h2 class="m-5 mb-0">Change Password</h2>
+        <hr class="border border-2 border-info">
         <form method="POST" class="change-pass-form ms-5 ">
             <!-- Current password -->
             <div> Current Password:</div>
