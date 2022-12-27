@@ -3,14 +3,44 @@
 Specifics : "openings.html", "search.html" */
 /* Ignoring rightside whitespace */
 .dropdown-toggle{
-    background-color: #090038;
+    background-color: transparent !important;
+}
+
+td{
+    color: white;
+}
+
+/* dropdown selects */
+.dropdown-menu{
+    background-color: #212529;
+}
+
+.dropdown-item{
+    color: white;
+}
+
+select, option{
+    background-color: #575859;
+    color: white;
+}
+
+/* btns */
+.btn{
+    background-color: #B9E0FF;
+    color: #170055;
 }
 
 /* nav links */
 .nav-link{
     font-size: larger;
 }
+/* inputs */
+input{
+    background-color: #575859;
+    color: white;
+}
 
+/* html/body */
 html,body
 {
     width: 100%;
@@ -18,6 +48,8 @@ html,body
     margin: 0px;
     padding: 0px;
     overflow-x: hidden; 
+    background-color: #575859;
+    color: white;
 }
 /* pfp */
 .header-pfp{
@@ -58,6 +90,16 @@ body{
     width: 10%;
 }
 
+.nav-link{
+    color:#02d0e3;
+}
+
+
+/* nav-link */
+.nav-link:hover{
+    color: #61ff5e;
+}
+
 
  /* NavBrand Logo */
  .nav-logo{
@@ -74,19 +116,7 @@ body{
 /* Navbar */
 .navbar{
     padding-top: 50px;
-}
-
-.nav-color{
-    background-image: url("/static/img/download.jpg");
-    background-size: cover;
-}
-
-.nav-contain{
-/* From https://css.glass */
-    background: rgba(141, 114, 225, 0.4);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(40px);
-    -webkit-backdrop-filter: blur(16.1px);
+    background-color: #262626;
 }
 /* brand title */
 .brand{
@@ -149,6 +179,8 @@ body{
     margin-bottom: 2%;
     border: 1px solid rgba(124, 129, 132, 0.7);
     box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);
+    background-color: #212529;
+    color: white;
 }
 
 /* Logout btn */
@@ -167,6 +199,11 @@ Specifics: "openings.html" */
     height: 30px;
     font-weight: bold;
  }
+
+/* ths */
+th{
+    color: #faff91;
+}
 
  /* Loss rate  */
  .loss-bar{

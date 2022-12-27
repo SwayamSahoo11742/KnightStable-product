@@ -12,7 +12,7 @@ var opponentRating = document.querySelector("#opponent-rating")
 // adding move count to keep track of the moves in a side table
 var moveCount = 0
 // determining whose move it is to update timers
-var whoseMove = "white"
+var whoseMove = "white" 
 var socket = io.connect("/play", {'sync disconnect on unload':true})
 var selfColor = null
 var gameData = null
@@ -134,7 +134,7 @@ socket.on("gameOver", (data) => {
         // If winner is not self (self = loser)
     } else {
         // deliver sad news
-        document.querySelector("#result-msg").innerText = "You Lost :(     Your rating decreased by:  " + (-1 * (data.loser_mod))
+        document.querySelector("#result-msg").innerText = "You Lost :(     Your rating decreased by:  " + ((data.loser_mod))
     }
     // Show modal with modified msgs
     myModal.show();

@@ -6,4 +6,4 @@ var fakeBoard = Chessboard("board", "start")
 playBtn.addEventListener("click", function(){
     settingsForm.style.display = "none"
     loadingImg.style.display = "inline"
-})
+}) 

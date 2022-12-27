@@ -2,7 +2,7 @@ import sqlite3
 from flask import Flask, flash, redirect, render_template, request, session
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
-from helpers import strip_eval, cap, attempt, save_pfp
+from helpers import strip_eval, cap, get_tournaments, save_pfp, get_uscf_rating
 from flask_socketio import SocketIO, send, join_room
 from flask_ngrok import run_with_ngrok
 
@@ -232,6 +232,8 @@ def register():
         session["username"] = user_rows[0]["username"]
         session["pfp"] = "/static\img\pfp/" + user_rows[0]["pfp"]
         session["about"] = user_rows[0]["about"]
+        session["uscf"] = ""
+        session["uscf_rating"] = "(Unrated)"
         # Cloding db
         users.close()
         # Flask Message
@@ -274,6 +276,16 @@ def login():
         session["logged"] = True
         session["pfp"] = "/static\img\pfp/" + user_rows[0]["pfp"]
         session["about"] = user_rows[0]["about"]
+        session["uscf"] = lambda: user_rows[0]["uscf"] if user_rows[0]["uscf"] != "" else ""
+        if user_rows[0]["uscf"] != "":
+            session["uscf"] = user_rows[0]["uscf"]
+        else:
+            session["uscf"] = ""
+
+        if session["uscf"] != "":
+            session["uscf_rating"] = get_uscf_rating(session["uscf"])
+        else:
+            session["uscf_rating"] = "(Unrated)"
         flash("Logged in Successfully")
         return redirect("/")
 
@@ -302,25 +314,39 @@ def home():
         return redirect("/about")
     # Connecting to db
     users = sqlite3.connect(db)
-    # Row Factory
+    # Row Factory 
     users.row_factory = sqlite3.Row
     # Cursor object
     cursor = users.cursor()
 
-    # Recent Games
-    games = cursor.execute("SELECT white, black, result, pgn FROM ksgame WHERE white = ? OR black = ? ORDER BY datetime DESC LIMIT 5", (session["username"], session["username"]))
-    games = [dict(x) for x in games]
-    
-    # Rating 
-    rating = dict(cursor.execute("SELECT rating FROM users WHERE username = ?", (session["username"],)).fetchone())["rating"]
+    # Getting top 10 players
+    games = cursor.execute(
+        "SELECT username, rating FROM users ORDER BY rating DESC LIMIT 10"
+    ).fetchall()
+    players = [dict(x) for x in games]
 
+    # Rating
+    rating = dict(
+        cursor.execute(
+            "SELECT rating FROM users WHERE username = ?", (session["username"],)
+        ).fetchone()
+    )["rating"]
+    users.close()
+
+    # Getting recent events
+    events = get_tournaments(10)
+
+    # Getting uscf rating
+    uscf = session["uscf_rating"]
     # Rending template
-    return render_template("home.html", games=games, rating=rating)
+    return render_template("home.html", players=players, rating=rating, events=events, uscf=uscf)
+
 
 # About Page
 @app.route("/about")
 def about():
     return render_template("about.html")
+
 
 # Search Page
 @app.route("/search", methods=["POST", "GET"])
@@ -735,6 +761,28 @@ def account():
                     flash("Password did not match", "alert-danger")
                     # Redirect
                     return redirect("/account")
+
+        # USCF connect
+        if request.form.get("submit") == "uscf-connect":
+            print("USCF CONNECT")
+            id = request.form.get("uscf-id")
+            # Invalid
+            if len(id) != 8:
+                flash("Invalid USCF ID")
+                return redirect("/account", "alert-danger")
+            # If valid
+            # insert into db
+            cursor.execute(
+                "UPDATE users SET uscf = ? WHERE id = ? ", (id, session["user_id"])
+            )
+            # Close db
+            users.commit()
+            users.close()
+            # Adding uscf to session
+            session["uscf"] = id
+            session["uscf_rating"] = get_uscf_rating(id)
+            flash("Successfully connected to USCF", "alert-success")
+            return redirect("/account")
 
 
 # Stats Page

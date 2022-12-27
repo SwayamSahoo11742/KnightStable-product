@@ -74,3 +74,7 @@ Specifics: "play.html" "game.html" */
     display: none;
 }
 
+/* Modal */
+.modal-content{
+   background-color: #212529;
+}

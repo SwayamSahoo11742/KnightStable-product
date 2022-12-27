@@ -73,5 +73,25 @@
             </div>
         </form>
     </div>
+
+    <!-- USCF connect form -->
+    <div>
+        <h2 class="m-5 mb-0">Connect with USCF</h2>
+        <hr class="border border-2 border-info">
+        <form method="POST">
+            <!-- Uscf id -->
+            <div class="ms-5">USCF ID:</div>
+            <input type="number" name="uscf-id" minlength="8" maxlength="8" class="ms-5">
+            <!-- Form text -->
+            <div class="form-text ms-5">
+                USCF IDs are 8 digit long
+              </div>
+
+            <!-- Submit -->
+            <div>
+                <button type="submit" name="submit" value="uscf-connect" class="btn btn-primary mb-5 ms-5 mt-3">Connect</button>
+            </div>
+        </form> 
+    </div>
 </div>
 {%endblock%}
