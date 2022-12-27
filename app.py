@@ -910,6 +910,9 @@ def members():
         members.close()
         return render_template("members.html", users=users)
 
+@app.route("/contact")
+def contact():
+    return render_template("contact.html")
 
 if __name__ == "__main__":
     socketio.run(app)

@@ -26,7 +26,7 @@
     <div class="card-body">
         <div>
             <!-- Pfp and username -->
-            <img src="{{url_for('static', filename='img/pfp/logo.jpg')}}" class="stat-img m-5">
+            <img src="{{session['pfp']}}" class="stat-img m-5">
             <span class="fs-2">{{name}}</span>
         </div>
 
