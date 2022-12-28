@@ -1,0 +1,18 @@
+<!-- Logout page -->
+
+<!-- Extended from layout -->
+{%extends "layout.html"%}
+
+<!-- Title -->
+{%block title%} Log out {%endblock%}
+
+<!-- Main Content -->
+{%block main%}
+<!-- Form Area -->
+<form action="/logout" method="POST" class="position-absolute start-50 translate-middle-x">
+    <!-- Confirmation Message -->
+    <div><h1 class="text-danger fw-bolder">Are you sure you want to log out?</h1></div>
+    <!-- Logout Btn -->
+    <button type="submit" class="btn btn-danger log-out-btn"> Log Out</button>
+</form>
+{%endblock%}

@@ -1,0 +1,49 @@
+<!-- Registration Page -->
+
+<!-- Extends from layout -->
+{%extends "layout.html" %}
+
+<!-- Title -->
+{% block title%} Register {%endblock%}
+
+<!-- Specific links/scripts -->
+{%block links%}
+<link href="{{url_for('static', filename='css/logreg.css')}}" rel="stylesheet">
+{%endblock%}
+
+<!-- Main Content -->
+{% block main%}
+<!-- Error flash message -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-danger {{ category }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<!-- Form area -->
+<h2 class="text-primary title">Register</h2>
+<div class="form-area">
+    <form action="/register" method="POST">
+      <!-- Username field -->
+        <label for="username" class="form-label">Username</label>
+        <input type="text" maxlength="20" minlength="4" placeholder="Username (min. 4 characters)" id="username" name="username" class="form-control">
+      
+      <!-- Email Field -->
+        <label for="email" class="form-label">Email</label>
+        <input type="text" placeholder="Email" name="email" class="form-control" id="email">
+        
+      <!-- Password field -->
+        <label for="password" class="form-label">Password</label>
+        <input type="password" minlength="6" placeholder="Password (min. 6 characters)" name="password" class="form-control" id="password">
+      
+      <!-- Confirm Pass -->
+        <label for="confirm" class="form-label">Confirm Password</label>
+        <input type="password" minlength="6" placeholder="Re-type Password" id="confirm" name="confirmation" class="form-control">
+      
+      <!-- Submit registration info -->
+        <button type="submit" class="btn btn-primary mt-4">Register</button>
+    </form>
+</div>
+{%endblock%}

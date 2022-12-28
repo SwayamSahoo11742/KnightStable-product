@@ -1,0 +1,44 @@
+<!-- Recommeneded links page -->
+
+<!-- Extends from layout -->
+{%extends "layout.html"%}
+
+<!-- Title -->
+{%block title%} Recommended {%endblock%}
+<!-- Specific links/scripts -->
+{%block links%}
+<link href="{{url_for('static', filename='css/about.css')}}" rel="stylesheet">
+{%endblock%}
+<!-- Main conetent -->
+{%block main%}
+<!-- Recommended Links -->
+<h1 id="about-title" class="display-5"> Recommended</h1>
+<div class="about-text">
+    <p>
+        Lichess - This is a free, non-profit website where people can enjoy and play with each other. They offer 
+        many things such as free puzzles, teaching videos and variants aswell. They have a huge playerbase and 
+        a responsive staff team.
+        <br><br>
+        Link - <a target="_blank" href="https://lichess.org/">https://lichess.org/</a>
+    </p>
+
+    <p>
+        Lichess Database - Most of the games here are from the Lichess Database, which has a collection of many games
+        over the years of Lichess in a .pgn.zst file. The databases are seprated by month all the way from January 2013 to
+        current time. In total they have just shy of 4 billion games.
+        <br><br>
+        Link - <a target="_blank" href="https://database.lichess.org/">https://database.lichess.org/</a>
+    </p>
+
+    <p>
+        Chess.com - Another awesome site to play chess on with others. Just like Lichess, Chess.com has puzzles, videos, tutorials
+        ,variants and more. However, it has features behind pay walls but many have said that the subscriptions were 
+        worth the returns.
+        <br><br>
+        Link - <a target="_blank" href="https://www.chess.com/home">https://www.chess.com/home</a>
+    </p>
+    <p>
+        All of these are awesome places and we reccomend you check them out.
+    </p>
+</div>
+{%endblock%}

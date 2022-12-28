@@ -2,7 +2,7 @@ import sqlite3
 from flask import Flask, flash, redirect, render_template, request, session
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
-from helpers import strip_eval, cap, attempt, save_pfp
+from helpers import strip_eval, cap, get_tournaments, save_pfp, get_uscf_rating
 from flask_socketio import SocketIO, send, join_room
 from flask_ngrok import run_with_ngrok
 
@@ -163,7 +163,7 @@ def game_over(gameinfo):
 def register():
     if request.method == "GET":
         # returninf template
-        return render_template("register.html", logged=attempt(session, "logged"))
+        return render_template("register.html")
     else:
         # Connecting to db
         users = sqlite3.connect(db)
@@ -232,6 +232,8 @@ def register():
         session["username"] = user_rows[0]["username"]
         session["pfp"] = "/static\img\pfp/" + user_rows[0]["pfp"]
         session["about"] = user_rows[0]["about"]
+        session["uscf"] = ""
+        session["uscf_rating"] = "(Unrated)"
         # Cloding db
         users.close()
         # Flask Message
@@ -243,7 +245,7 @@ def register():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "GET":
-        return render_template("login.html", logged=attempt(session, "logged"))
+        return render_template("login.html")
     else:
         users = sqlite3.connect(db)
         users.row_factory = sqlite3.Row
@@ -274,6 +276,16 @@ def login():
         session["logged"] = True
         session["pfp"] = "/static\img\pfp/" + user_rows[0]["pfp"]
         session["about"] = user_rows[0]["about"]
+        session["uscf"] = lambda: user_rows[0]["uscf"] if user_rows[0]["uscf"] != "" else ""
+        if user_rows[0]["uscf"] != "":
+            session["uscf"] = user_rows[0]["uscf"]
+        else:
+            session["uscf"] = ""
+
+        if session["uscf"] != "":
+            session["uscf_rating"] = get_uscf_rating(session["uscf"])
+        else:
+            session["uscf_rating"] = "(Unrated)"
         flash("Logged in Successfully")
         return redirect("/")
 
@@ -284,20 +296,56 @@ def login():
 @app.route("/logout", methods=["GET", "POST"])
 def logout():
     if request.method == "GET":
-        return render_template("logout.html", logged=attempt(session, "logged"))
+        return render_template("logout.html")
     else:
         # Logging user out
         session["logged"] == False
         # Clearing login session
         session.clear()
-        return redirect("/")
+        return redirect("/about")
 
 
 # Home page
 @app.route("/")
 def home():
+    # Checking if user is logged
+    if "logged" not in session:
+        flash("You should log in", "alert-danger")
+        return redirect("/about")
+    # Connecting to db
+    users = sqlite3.connect(db)
+    # Row Factory 
+    users.row_factory = sqlite3.Row
+    # Cursor object
+    cursor = users.cursor()
 
-    return render_template("about.html", logged=attempt(session, "logged"))
+    # Getting top 10 players
+    games = cursor.execute(
+        "SELECT username, rating FROM users ORDER BY rating DESC LIMIT 10"
+    ).fetchall()
+    players = [dict(x) for x in games]
+
+    # Rating
+    rating = dict(
+        cursor.execute(
+            "SELECT rating FROM users WHERE username = ?", (session["username"],)
+        ).fetchone()
+    )["rating"]
+    users.close()
+
+    # Getting recent events
+    events = get_tournaments(10)
+
+    # Getting uscf rating
+    uscf = session["uscf_rating"]
+    # Rending template
+    return render_template("home.html", players=players, rating=rating, events=events, uscf=uscf)
+
+
+# About Page
+@app.route("/about")
+def about():
+    return render_template("about.html")
 
 
 # Search Page
@@ -306,7 +354,7 @@ def search():
     # If get render template
     if request.method == "GET":
 
-        return render_template("search.html", logged=attempt(session, "logged"))
+        return render_template("search.html")
     else:
         # Connecting to server
         games = sqlite3.connect(db)
@@ -344,9 +392,7 @@ def search():
             result = [dict(row) for row in valid_games]
 
             cursor.close()
-            return render_template(
-                "search.html", games=result, logged=attempt(session, "logged")
-            )
+            return render_template("search.html", games=result)
         else:
             # Defining Query
             query = "SELECT * FROM games WHERE black LIKE ? AND white LIKE ? AND moves LIKE ? AND opening LIKE ? AND white_elo <= ? AND white_elo >= ? LIMIT(50)"
@@ -369,7 +415,6 @@ def search():
             cursor.close()
             return render_template(
                 "search.html",
-                logged=attempt(session, "logged"),
                 games=results,
                 black_user=black_user,
                 white_user=white_user,
@@ -387,7 +432,7 @@ def openings():
     # Checking if request is GET
     if request.method == "GET":
         # Render template
-        return render_template("openings.html", logged=attempt(session, "logged"))
+        return render_template("openings.html")
     else:
         # Connect to db
         games = sqlite3.connect(db)
@@ -423,7 +468,6 @@ def openings():
         # Returning template
         return render_template(
             "openings.html",
-            logged=attempt(session, "logged"),
             openings=openings,
             color=color.capitalize(),
             moves=moves,
@@ -435,7 +479,7 @@ def openings():
 @app.route("/recommended")
 def recommended():
     # This is a static template, therefore only returning template
-    return render_template("recommended.html", logged=attempt(session, "logged"))
+    return render_template("recommended.html")
 
 
 # Page where the game playing will be commenced
@@ -463,7 +507,6 @@ def game(id):
     # Rendering template
     return render_template(
         "game.html",
-        logged=attempt(session, "logged"),
         white_pfp=white_pfp,
         black_pfp=black_pfp,
     )
@@ -474,7 +517,7 @@ def game(id):
 def play():
     # If GET request, render template
     if request.method == "GET":
-        return render_template("play.html", logged=attempt(session, "logged"))
+        return render_template("play.html")
     # If POST
     else:
         # Get specified customizations
@@ -570,7 +613,7 @@ def profile():
     # If Just visiting
     if request.method == "GET":
         # Return the template
-        return render_template("profile.html", logged=attempt(session, "logged"))
+        return render_template("profile.html")
     # If changes applied
     else:
         # Get about text
@@ -600,7 +643,7 @@ def account():
     # IF get
     if request.method == "GET":
         # Render
-        return render_template("account.html", logged=attempt(session, "logged"))
+        return render_template("account.html")
     else:
         # Connect to db
         users = sqlite3.connect(db)
@@ -719,6 +762,28 @@ def account():
                     # Redirect
                     return redirect("/account")
 
+        # USCF connect
+        if request.form.get("submit") == "uscf-connect":
+            print("USCF CONNECT")
+            id = request.form.get("uscf-id")
+            # Invalid
+            if len(id) != 8:
+                flash("Invalid USCF ID")
+                return redirect("/account", "alert-danger")
+            # If valid
+            # insert into db
+            cursor.execute(
+                "UPDATE users SET uscf = ? WHERE id = ? ", (id, session["user_id"])
+            )
+            # Close db
+            users.commit()
+            users.close()
+            # Adding uscf to session
+            session["uscf"] = id
+            session["uscf_rating"] = get_uscf_rating(id)
+            flash("Successfully connected to USCF", "alert-success")
+            return redirect("/account")
+
 
 # Stats Page
 @app.route("/user/<name>", methods=["GET", "POST"])
@@ -777,6 +842,8 @@ def stat(name):
         (name, name, name),
     ).fetchall()
     ratings = [x[0] for x in ratings]
+    if ratings == []:
+        ratings = [100]
 
     # Getting about text
     about = cursor.execute(
@@ -784,15 +851,15 @@ def stat(name):
     ).fetchone()[0]
 
     # Getting games
-    games = cursor.execute("SELECT white, black, result, pgn FROM ksgame WHERE black = ? OR white = ? LIMIT 10", (name,name)).fetchall()
-    print(games)
-
+    games = cursor.execute(
+        "SELECT white, black, result, pgn FROM ksgame WHERE black = ? OR white = ? LIMIT 10",
+        (name, name),
+    ).fetchall()
     # Closing db
     users.close()
 
     return render_template(
         "stat.html",
-        logged=attempt(session, "logged"),
         name=name,
         white_stats=white_stats,
         black_stats=black_stats,
@@ -800,9 +867,52 @@ def stat(name):
         ratings=ratings,
         current_rating=ratings[len(ratings) - 1],
         about=about,
-        games = games
+        games=games,
     )
 
+
+@app.route("/members", methods=["GET", "POST"])
+def members():
+    # If GET request
+    if request.method == "GET":
+        # Connecting to db
+        members = sqlite3.connect(db)
+        members.row_factory = sqlite3.Row
+        # Cursor object
+        cursor = members.cursor()
+
+        # Getting top 10 players
+        users = cursor.execute(
+            "SELECT username, rating FROM users ORDER BY rating DESC LIMIT 10"
+        ).fetchall()
+        users = [dict(x) for x in users]
+
+        members.close()
+        # Return template
+        return render_template("members.html", users=users)
+    # If Post request
+    else:
+        username = request.form.get("username")
+        # Connecting to db
+        members = sqlite3.connect(db)
+        members.row_factory = sqlite3.Row
+        # Cursor object
+        cursor = members.cursor()
+
+        # Getting top 10 players
+        users = cursor.execute(
+            "SELECT username, rating FROM users WHERE username LIKE ?",
+            ("%" + username + "%",),
+        ).fetchall()
+        users = [dict(x) for x in users]
+
+        # Closing db
+        members.close()
+        return render_template("members.html", users=users)
+
+@app.route("/contact")
+def contact():
+    return render_template("contact.html")
 
 if __name__ == "__main__":
     socketio.run(app)

@@ -1,0 +1,47 @@
+<!-- Extend from layout -->
+{%extends "layout.html"%}
+
+<!-- Title -->
+{%block title%} Members {%endblock%}
+
+<!-- Specific links or scripts -->
+{%block links%}
+<link href="{{url_for('static', filename='css/members.css')}}" rel="stylesheet">
+{%endblock%}
+
+<!-- Main Content -->
+{%block main%}
+<h2 class="ms-5 mt-3 fw-bolder">Members</h2>
+<div class="row">
+    <div class="col-9">
+        <table class="table table-hover table-dark table-striped ms-5 mt-5 members-table">
+            <h2 class="t10 mt-5 ms-3 text-light">Top 10 Players</h2>
+            <thead>
+                <tr>
+                    <th> Rank </th>
+                    <th> Username </th>
+                    <th> Rating </th>
+                </tr>
+            </thead>
+            <tbody>
+                {%for i in range(users | length) %}
+                <tr>
+                    <td>#{{i+1}}</td>
+                    <td><a href="/user/{{users[i]['username']}}" class="player-name text-light">{{users[i]['username']}}</a></td>
+                    <td>{{users[i]['rating']}}</td>
+                </tr>
+                {%endfor%}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="col-3">
+        <div class="card user-search">
+            <form method="POST" >
+                <label for="username" class="card-title fs-4">Search Members</label>
+                <input type="text" autocomplete="off" name="username" placeholder="Search Members">
+            </form>
+        </div>
+    </div>
+</div>
+{%endblock%}

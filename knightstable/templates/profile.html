@@ -1,0 +1,44 @@
+<!-- Extendsing from layout -->
+{%extends "layout.html"%}
+
+<!-- Title -->
+{%block title%} Profile {%endblock%}
+
+<!-- adding specific links -->
+{%block links%}
+<link href="{{url_for('static', filename='css/profile.css')}}" rel="stylesheet">
+{%endblock%}
+
+<!-- Main content -->
+{%block main%}
+<!-- Changes successful flash message -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-success {{ category }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+<!-- Profile heading -->
+<h1 class="text-center mt-5">Profile</h1>
+
+<!-- Profile card -->
+<div class="card profile-card">
+    <div>
+        <!-- pfp and username -->
+        <img src="{{session['pfp']}}" class="profile-pfp m-5">
+        <span class="fs-1"> {{session['username']}}</span>
+    </div>
+    <!-- About me text area -->
+    <div>
+        <form method="POST" class="about-text-form">
+            <!-- About you -->
+            <div>
+                <input type="text" class="about-textarea ms-5" placeholder="Write something about you" value="{{session['about']}}" name="about">
+            </div>
+            <!-- Apply changes -->
+            <button type="submit" class="btn btn-primary ms-5 mt-3 mb-5"> Apply Changes </button>
+        </form>
+    </div>
+</div>
+{%endblock%}

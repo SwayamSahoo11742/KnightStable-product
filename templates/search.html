@@ -6,6 +6,11 @@
 <!-- Title -->
 {%block title%} Search Games {%endblock%}
 
+{%block links%}
+<link href="{{url_for('static', filename='css/search.css')}}" rel="stylesheet">
+{%endblock%}
+
+
 <!-- Main Content -->
 {%block main%}
 <!-- Filter Options-->
@@ -54,7 +59,7 @@
                     <option>1/2 - 1/2</option>
                 </select>
               <!-- Criteria submit -->
-                <button type="submit"> Filter </button>
+                <button type="submit" class="btn"> Filter </button>
             </form>
         </div>
       </div>

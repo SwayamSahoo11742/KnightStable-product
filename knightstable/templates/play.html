@@ -1,0 +1,64 @@
+<!-- Pre game settings and matchmaking page -->
+
+<!-- Extends from layout -->
+{%extends "layout.html" %}
+
+<!-- Titlr -->
+{%block title%} Play {%endblock%}
+
+<!-- Sepcific links/scripts -->
+{%block links%}
+<script src="{{ url_for('static', filename='js/chessboard-1.0.0.js') }}"></script>
+<script src="{{ url_for('static', filename='js/play.js') }}" type="module"></script>
+<link rel="stylesheet" href="{{url_for('static', filename='css/play.css')}}">
+<link rel="stylesheet" href="\static\css\chessboard-1.0.0.css">
+{%endblock%}
+
+
+<!-- Main content -->
+{%block main%}
+<div class="row">
+    <!-- Fake Board -->
+    <div class="col-sm">
+        <div id="board" class="fake-board p-5"></div>
+    </div>
+    <div class="col-sm">
+        <!-- Match Settings card -->
+        <div class="card" id="match-settings-card">
+            <!-- Hidden Search gif -->
+            <div class="loading-img">
+                <div class="fs-2 text-center mt-3 fw-5">Searching....</div>
+                <img src='static/img/loading.gif'>
+            </div>
+            <!-- Form Start -->
+            <form method="POST" action="/play" class="match-settings-form">
+                <div class="text-center">
+                    <div class="match-setting mt-5">
+                        <!-- Time Control Selection dropdown -->
+                        <div class="m-2 fs-3 fw-3">Time Control</div>
+                        <select class="ps-5 pe-5 pt-4 pb-4 fs-4" name="time">
+                            <option class="fs-3 text-center"> 05:00 </option>
+                            <option class="fs-3 text-center"> 10:00</option>
+                            <option class="fs-3 text-center"> 30:00</option>
+                        </select>
+                    </div>
+                    <!-- rating selection dropdown -->
+                    <div class="match-setting mt-5">
+                        <div class="m-2 fs-3 fw-3 ">Rated</div>
+                        <select class="ps-5 pe-5 pt-4 pb-4 fs-4" name="rated">
+                            <option class="fs-3 text-center"> Yes</option>
+                            <option class="fs-3 text-center"> No</option>
+                        </select>
+                    </div>
+                    <!-- Criterias Submit -->
+                    <div>
+                        <button type="submit" class="mt-5 btn btn-primary pt-2 pb-2 pe-5 ps-5 play-btn">Play</button>
+                    </div>
+                </div>
+            </form>
+            <!-- Form End -->
+        </div>
+    </div>
+</div>
+
+{%endblock%}

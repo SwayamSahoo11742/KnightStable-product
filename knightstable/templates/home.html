@@ -1,0 +1,172 @@
+<!-- Extendsing from layout -->
+{%extends "layout.html"%}
+
+<!-- Title -->
+{%block title%} Home {%endblock%}
+
+<!-- Specific links/scripts -->
+{% block links%}
+<link href="{{url_for('static', filename='css/home.css')}}" rel="stylesheet">
+<script src="{{url_for('static', filename='js/home.js')}}"></script>
+{%endblock%}
+
+{%block main%}
+ 
+<div class="row">
+    <div class="col-7">
+        <div class="recent-games">
+            <div>
+                <!-- Nav pad -->
+                <!-- Row 1 -->
+                <div>
+                    <!-- Stats tile -->
+                    <a href="/user/{{session['username']}}">
+                        <div class="cell text-center">
+                            <img src="\static\img\stats.png" class="icon">
+                            Stats
+                        </div>
+                    </a>
+                    <!-- Profile tile -->
+                    <a href="/profile">
+                        <div class="cell text-center">
+                            <img src="\static\img\profile.png" class="icon">
+                            Profile
+                        </div>
+                    </a>
+                    <!-- Settings Tile -->
+                    <a href="/account">
+                        <div class="cell text-center">
+                            <img src="\static\img\settings.png" class="icon">
+                            Settings
+                        </div>
+                    </a>
+                </div>
+                <!-- Row 2 -->
+                
+                <div>
+                    <!-- Play Tile -->
+                    <a href="/play">
+                        <div class="cell play-btn text-center">
+                            <img src="\static\img\king.png" class="icon icon-piece me-5">
+                            <span class="ms-5 me-5">Play</span>
+                            <img src="\static\img\queen.png" class="icon icon-piece ms-5">
+                        </div>
+                    </a>
+                </div>
+                
+                <!-- row 3 -->
+                <div>
+                    <!-- Search tile -->
+                    <a href="/search">
+                        <div class="cell text-center">
+                            <img src="\static\img\search.png" class="icon">
+                            Search
+                        </div>
+                    </a>
+                    <!-- Opening tile -->
+                    <a href="/opening">
+                        <div class="cell text-center">
+                            <img src="\static\img\opening.png" class="icon pt-2">
+                            Openings
+                        </div>
+                    </a>
+                    <!-- Members tile -->
+                    <a href="/members">
+                        <div class="cell text-center">
+                            <img src="\static\img\members.png" class="icon" id="members">
+                            Members
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+        </div>
+
+
+    <!-- Status card -->
+
+    <div class="col-5">
+        <div class="card status-card ms-5 text-light bg-dark" >
+            <!-- Header -->
+            <div class="card-header text-center fs-3"> You </div>
+            <!-- Body -->
+            <div class="card-body">
+                <!-- pfp -->
+                <img src="{{session['pfp']}}" alt="PFP" class="status-pfp">
+                <!-- Username -->
+                <span class="ms-5 fs-2">{{session["username"]}}</span>
+                
+                <!-- Rating -->
+                {%if session['uscf'] is defined%}
+                <div class="fs-3 mt-4">Rating: {{rating}} <span class="text-info">||</span> USCF: {{uscf}}</div>
+                {%else%}
+                <div class="fs-3 mt-4">Rating: {{rating}}</div>
+                {%endif%}
+                <!-- About me -->
+                <div class="fs-3 mt-2">About Me:</div>
+                <div> {{session["about"]}}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Top 10  -->
+    <div class="col-5">
+        <table class="table table-hover table-dark table-striped ms-5 mt-5 members-table">
+            <thead>
+                <tr>
+                    <!-- Title -->
+                    <td colspan="3"><h2 class="text-light">Top 10 Players</h2></td>
+                </tr>
+                <tr>
+                    <!-- Headings -->
+                    <th> Rank </th>
+                    <th> Username </th>
+                    <th> Rating </th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Looping thorugh players -->
+                {%for i in range(players | length) %}
+                <tr>
+                    <!-- Rank no. -->
+                    <td class="text-light">#{{i+1}}</td>
+                    <!-- name -->
+                    <td><a href="/user/{{players[i]['username']}}" class="player-name text-light">{{players[i]['username']}}</a></td>
+                    <!-- rating -->
+                    <td class="text-light">{{players[i]['rating']}}</td>
+                </tr>
+                {%endfor%}
+            </tbody>
+        </table>
+    </div>
+    <!-- Events -->
+    <div class="col-6">
+        <table class="table table-hover table-dark table-striped ms-5 mt-5 members-table events-table">
+            <thead>
+                <!-- Heading -->
+                <tr>
+                    <td colspan="2"><h2 class="text-light"> Latest Chess Events</h2></td>
+                </tr>
+                <!-- sub headings -->
+                <tr>
+                    <th>  Event Name </th>
+                    <th>  Date/Location </th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Looping through event  -->
+                {%for event in events %}
+                <tr>
+                    <!-- name and link -->
+                    <td><a href="{{event['link']}}" target="_blank" class="player-name text-light">{{ event['name'] }}</a></td>
+                    <!-- date -->
+                    <td class="text-light">{{event['date']}}</td>
+                </tr>
+                {%endfor%}
+            </tbody>
+        </table>
+    </div>
+</div>
+{%endblock%}

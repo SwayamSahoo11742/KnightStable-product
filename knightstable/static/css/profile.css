@@ -1,0 +1,19 @@
+/* This file is used for: profile pages, 
+Specifics : "profile.html" */
+
+/* Profile card */
+.profile-card{
+    min-width: 90%;
+    min-height: 80%;
+}
+/* Profile pfp */
+.profile-pfp{
+    max-width: 30%;
+    border: 1PX solid black;
+}
+
+/* aboutme textarea */
+.about-textarea{
+    width: 90%;
+    padding-bottom: 10%;
+}
