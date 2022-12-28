@@ -1,0 +1,99 @@
+<!-- Extending from layout -->
+{%extends "layout.html"%}
+
+<!-- Titke -->
+{%block title%} {{name}}'s Stats {%endblock%}
+
+<!-- Specific link/scripts -->
+{%block links%}
+<link href="{{url_for('static', filename='css/stat.css')}}" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+<script src="{{url_for('static', filename='js/stat.js')}}"></script>
+{%endblock%}
+
+<!-- Main content -->
+{%block main%}
+<!-- Sending Data to js file -->
+<script>
+    var whiteStats = "{{white_stats}}"
+    var blackStats = "{{black_stats}}"
+    var allStats = "{{all_stats}}"
+    var ratings = "{{ratings}}"
+</script>
+
+<!-- About stat block -->
+<div class="card stat-card mt-5">
+    <div class="card-body">
+        <div>
+            <!-- Pfp and username -->
+            <img src="{{session['pfp']}}" class="stat-img m-5">
+            <span class="fs-2">{{name}}</span>
+        </div>
+
+        <!-- About me -->
+        <h3 class="ms-3">About Me:</h3>
+        <div class="about-text ms-5 card-text">
+            {{about}}
+        </div>
+    </div>
+
+</div>
+
+<!-- GAME STATS -->
+<div class="card stat-card mt-5 stat-2-card">
+        <div> <h1 class="ms-3 mt-3"> {{name}}'s Stats </h1></div>
+        <!-- Rating Graph -->
+        <!-- Heading -->
+        <h3 class="ms-3 mt-5 card-subtitle">Rating</h3>
+        <hr class="border border-dark border-2">
+        <!-- ACtual Graph -->
+        <canvas id="rating-graph" class="mt-5 chart"></canvas>
+        <!-- Rating Number -->
+        <h1 class="text-center">{{current_rating}}</h1>
+        <p class="text-center">USCF: {{session["uscf_rating"]}}</p>
+
+        <!-- Pie Chart of results -->
+        <h3 class="ms-3 stat-titles mt-5">Result Stats</h3>
+        <hr class="border border-dark border-2">
+        <!-- Btns for white, black and all -->
+        <div class="d-inline-block ms-3 mt-4">
+            <button class="white-btn stats-btn">White</button> 
+            <button class="black-btn stats-btn">Black</button> 
+            <button class="all-btn stats-btn">All</button>
+        </div>
+        <!-- Chart -->
+        <canvas id="chart" class="mt-5 mb-5 chart"></canvas>
+
+        <!-- Recent Games -->
+        <h3 class="ms-3 mt-5"> Recent Games </h3>
+        <hr class="border border-dark border-2">
+        <table class="table mt-5 table-striped">
+            <thead>
+                <tr>
+                    <!-- Table Heading -->
+                    <th scope="col"> No.</th>
+                    <th scope="col"> White</th>
+                    <th scope="col"> Black</th>
+                    <th scope="col"> Result</th>
+                    <th scope="col"> PGN</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Looping through and adding games -->
+                {%for i in range(games | length)%}
+                <tr>
+                    <td>{{i+1}}</td>
+                    <td>{{games[i][0]}}</td>
+                    <td>{{games[i][1]}}</td>
+                    <td>{{games[i][2]}}</td>
+                    <td>{{games[i][3]}}</td>
+                </tr>
+                {%endfor%}
+            </tbody>
+        </table>
+        <p class="text-danger ms-3">NOTE: Only the last 10 games are stored here</p>
+</div>
+
+
+
+{%endblock%}

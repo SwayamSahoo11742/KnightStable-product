@@ -1,0 +1,80 @@
+/* This file is used for: game related pages
+Specifics: "play.html" "game.html" */
+
+
+
+/* Board */
+.board{
+    width: 550%;
+    margin-left: 30%;
+    margin-top: 7%;
+ }
+
+/* Profile Picture of the player(s) */
+ .pfp{
+    max-width: 20%;
+    max-height: 20%;
+    display: inline-block;
+    border: 1px solid black;
+ }
+
+/* Player info card */
+ .player-card{
+    min-width: 100%;
+    margin: 2%;
+
+ }
+ /* Aligning player info vertically */
+ .player-card > div{
+    display: inline;
+ }
+
+/* Aligning player name */
+ .player-name{
+    display: inline-block;
+ }
+/* Player 2 specifications */
+ #player2{
+    margin-top: 25%;
+ }
+/* Moves Table */
+ .table{
+    width: 100%;
+    
+ }
+/* Moves within moves table */
+ #moves{
+    margin-left: 33.8%;
+    max-width: 31%;
+    margin-top: 5px;
+ }
+
+ /* Moves table */
+.move-table{
+    max-height: 100%;
+    overflow: auto;
+    
+}
+
+/* Fake Board */
+.fake-board{
+    width: 95%;
+    padding: 0px;
+}   
+
+/* Match Settings */
+#match-settings-card{
+    margin: 8% 8% 0 0;
+    min-width: 85%;
+    min-height: 90%;
+}
+
+/* Searching/Loading gif */
+.loading-img{
+    display: none;
+}
+
+/* Modal */
+.modal-content{
+   background-color: #212529;
+}

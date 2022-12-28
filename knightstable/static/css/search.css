@@ -1,0 +1,15 @@
+/* This file is used for: Search based pages 
+Specifics: "search.html" , "openings.html"*/
+
+/* filter nav-bar */
+.navbar-filter{
+    background-color: #575859;
+}
+/* Offbody */
+.offcanvas-body{
+    background-color: #212529;
+}
+
+.offcanvas-header{
+    background-color: #212529;
+}

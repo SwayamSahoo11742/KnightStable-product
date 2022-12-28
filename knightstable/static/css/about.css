@@ -1,0 +1,36 @@
+/* This file is used for: about Page
+Specifics: "about.html, "recommended.html"*/
+
+/* About Text */
+
+.about-text{
+    margin-left:25%;
+    margin-top:3%;
+    max-width: 50%;
+
+}
+
+/* About Text ending message */
+.about-text > p:last-child{
+    color: purple;
+    font-size: 150%;
+    font-weight: bold;
+
+
+}
+
+/* About Text title */
+h1{
+    margin-top:25px;
+}
+
+/* Logo */
+#homepage-logo{
+    margin-left:40%;
+}
+/* About title */
+#about-title{
+    margin-left: 35%;
+    margin-bottom: 0;
+    padding:0;
+}

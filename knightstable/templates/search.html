@@ -1,0 +1,105 @@
+<!-- A Page to search for games from Lichess Database -->
+
+<!-- Extends from layout -->
+{%extends "layout.html"%}
+
+<!-- Title -->
+{%block title%} Search Games {%endblock%}
+
+{%block links%}
+<link href="{{url_for('static', filename='css/search.css')}}" rel="stylesheet">
+{%endblock%}
+
+
+<!-- Main Content -->
+{%block main%}
+<!-- Filter Options-->
+<nav class="navbar navbar-filter">
+    <div class="container-fluid">
+      <!-- Flter Btn -->
+      <button class="navbar-toggler btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasDarkNavbar" aria-controls="offcanvasDarkNavbar">
+        Filter <span class="equiv-sym">&#8801;</span>
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="offcanvas offcanvas-end text-bg-dark" tabindex="-1" id="offcanvasDarkNavbar" aria-labelledby="offcanvasDarkNavbarLabel">
+        <div class="offcanvas-header">
+          <!-- Filter Heading -->
+          <h5 class="offcanvas-title" id="offcanvasDarkNavbarLabel">Filter</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <!-- Filter Form area -->
+        <div class="offcanvas-body" >
+            <form method="POST" action="/search">
+              <!-- White player -->
+                <input type="text" class="search-filter-option" placeholder="White Username (Optional)" maxlenght="20" name="white-username"><br>
+                
+              <!-- Black player -->
+                <input type="text" class="search-filter-option" placeholder="Black Username (Optional)" maxlenght="20" name="black-username"><br>
+
+              <!-- Moves substring -->
+                <input type="text" class="search-filter-option" placeholder="Moves (Optional)" name="moves"><br>
+
+              <!-- Opening played -->
+                <input type="text" class="search-filter-option" placeholder="Opening (Optional)" name="opening"><br>
+              
+              <!-- Min white player rating -->
+                <label for="min-rating"> Min. Rating</label>
+                <input type="number" id="min-rating" class="search-filter-option rating-number" placeholder="516" max="9999" min="100" name="min-rating" value="333"><br>
+              
+              <!-- Max white player rating -->
+                <label for="max-rating"> Max. Rating</label>
+                <input type="number" id="max-rating" class="search-filter-option rating-number" placeholder="1914" max="9999" min="100" name="max-rating" value="1864">
+
+              <!-- Result of the game -->
+                <label for="result"> Result</label>
+                <select id="result" class="search-filter-option" name="result">
+                    <option>Any</option>
+                    <option>1-0</option>
+                    <option>0-1</option>
+                    <option>1/2 - 1/2</option>
+                </select>
+              <!-- Criteria submit -->
+                <button type="submit" class="btn"> Filter </button>
+            </form>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+
+    <!-- A card to show search criterias-->
+    <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Showing results for:</h5>
+          <div class="card-subtitle">
+            <!-- Moves, Min, Max, Result, Opening, White and Black criterias searched for -->
+            <h6 >>Moves - {% if moves == "" %} Any {%else%} {{moves}} {%endif%} </h6>
+            <h6 >>Min Rating - {% if min_rating == "" %} Any {%else%} {{min_rating}} {%endif%} </h6>
+            <h6 >>Max Rating - {% if max_rating == "" %} Any {%else%} {{max_rating}} {%endif%} </h6>
+            <h6 >>Result - {% if result == "" %} Any {%else%} {{result}} {%endif%} </h6>
+            <h6 >>Opening - {% if opening == "" %} Any {%else%} {{opening}} {%endif%} </h6>
+            <h6 >>White - {% if white_user == "" %} Any {%else%} {{white_user}} {%endif%} </h6>
+            <h6 >>Black - {% if black_user == "" %} Any {%else%} {{black_user}} {%endif%} </h6>
+          </div>
+        </div>
+    </div>
+
+    <!-- Game cards-->
+    {%for game in games%}
+    <div class="card">
+        <div class="card-body">
+          <!-- Game Players -->
+            <h5  class="card-title"> {{game["white"]}} ({{game["white_elo"]}}) vs {{game["black"]}} ({{game["black_elo"]}})</h5>
+          <!-- Game Opening -->
+            <h6 class="card-subtitle"> {{game["opening"]}}</h6>
+          <!-- Game result -->
+            <h6 class="card-subtitle">{{game["result"]}}</h6>
+          <!-- game moves -->
+            <p class="card-text"> {{strip_eval(game["moves"])}}</p>
+          <!-- Link to game -->
+            <a href= "{{game['site']}}" class="card-link" target="_blank">Game Link</a>
+        </div>
+    </div>
+    {%endfor%}
+
+{%endblock%}

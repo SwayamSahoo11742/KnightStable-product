@@ -1,0 +1,51 @@
+<!-- About page -->
+
+<!-- Extending from layout -->
+{%extends "layout.html"%}
+
+<!-- Title of the page -->
+{%block title%} About {%endblock%}
+
+<!-- Specific links/scripts -->
+{%block links%}
+<link href="{{url_for('static', filename='css/about.css')}}" rel="stylesheet">
+{%endblock%}
+<!-- Main content -->
+{%block main%}
+
+<!-- Login successful flask message -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-success {{ category }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+        <!-- About -->
+        <h1 id="about-title" class="display-5"> About KnightStable </h1>
+
+        <div class="about-text">
+            <p>
+                KnightStable is made for people trying to explore games and resources. With this site, you can
+                find ranging from 100 all the way up the 2800s, you can use these games to analyze openings, style
+                of play, learn from higher level games or see how people at your level are playing.
+            </p>
+
+            <p>
+                Aside from searching openings, you can also search for openings and see which one suits your play style. Are
+                you an agressive player? Maybe take a look at the Dutch Defense or Kings Indian Defense. Are you a sharp player?
+                The Tal Variation will suit you the best! We have the most famous as well as the most obsecure openings in our list so feel
+                free to poke around!
+            </p>
+            <p>
+                We also recommend you check out the recommened section for awesome sites related to chess, some are
+                for learning chess and some for playing and many more. These sites are used all around the world regularly
+                by many.
+            </p>
+            <p>
+                Enjoy your time here at KnightStable!
+            </p>
+        </div>
+        <!-- Logo -->
+        <img src="/static/img/logo.png" id="homepage-logo">
+{%endblock%}

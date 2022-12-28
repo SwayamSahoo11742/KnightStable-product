@@ -1,0 +1,29 @@
+/* This file is used for: Opening page(s?)
+Specifics: "openings.html" */
+
+/* Win/Loss/Draw rate bars */
+ .rate-bar{
+    padding: 0;
+    margin: 0;
+    font-size: 67%;
+    display:inline-block; 
+    height: 30px;
+    font-weight: bold;
+ }
+
+ /* Loss rate  */
+ .loss-bar{
+    color:white;
+ }
+
+ /* Search form area */
+ .form-area{
+    max-width: 35%;
+    margin-left: 35%;
+ }
+
+/* Search Form title  */
+ .title{
+    margin: 3% 3% 3% 47%;
+ }
+

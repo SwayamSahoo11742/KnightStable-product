@@ -1,0 +1,97 @@
+
+<!-- Extending from layout -->
+{%extends "layout.html"%}
+
+<!-- Title -->
+{%block title%} Account Settings {%endblock%}
+
+<!-- adding specific links -->
+{%block links%}
+<link href="{{url_for('static', filename='css/account.css')}}" rel="stylesheet">
+{%endblock%}
+
+<!-- Main Content -->
+{%block main%}
+<!-- Changes successful flash message -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert {{category}}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+<!-- Heading -->
+<h1 class="text-center m-5">Account Settings</h1>
+<!-- Password Change Form -->
+<div class="card account-card">
+    <!-- Change Profile Picture -->
+    <div>
+        <h2 class="mt-5 ms-5">Change Profile Picture</h2>
+        <hr class="border border-2 border-info ms-0">
+        <form method="POST" class="ms-5" enctype="multipart/form-data">
+            <img src="{{session['pfp']}}" class="mt-3 mb-5 pfp">
+            <input type="file" class="btn btn-primary ms-5" accept="image/png, image/jpeg" name="pfp" required>
+            <div>
+                <button type="submit" class="btn btn-primary" name="submit" value="pfp-change">Apply Changes</button>
+            </div>
+        </form>
+    </div>
+    <!-- Change Username -->
+    <div>
+        <!-- Username change field -->
+        <form method="POST">
+            <h2 class="m-5 mb-0"> Change Username</h2>
+            <hr class="border border-2 border-info">
+            <div class="ms-5 mt-3 fs-4">New Username:</div>
+            <input type="text" class="fs-4 ms-5" value="{{session['username']}}" name="username" minlength="4" required>
+            <!-- Password Change field -->
+            <div class="ms-5 mt-3 fs-4"> Password: </div>
+            <input type="password" class="ms-5 fs-4" name="password" required>
+            <!-- Submit new username -->
+            <div>
+                <button type="submit" name="submit" value="name-change" class="btn btn-primary ms-5 mb-5 mt-3"> Apply Change</button>
+            </div>
+        </form>
+    </div>
+    <!-- Change Password -->
+    <div>
+        <h2 class="m-5 mb-0">Change Password</h2>
+        <hr class="border border-2 border-info">
+        <form method="POST" class="change-pass-form ms-5 ">
+            <!-- Current password -->
+            <div> Current Password:</div>
+            <input type="password" class="mt-2 mb-4 pass-field" name="current-password" required>
+            <!-- new password -->
+            <div>New Password:</div>
+            <input type="password" class="mt-2 mb-4 pass-field" name="new-password" minlength="8" required>
+            <!-- Confirm new password -->
+            <div> Confirm Password:</div>
+            <input type="password" class="mt-2 mb-3 pass-field" name="confirm-password" required>
+            <!-- Pass submit -->
+            <div>
+                <button type="submit" name="submit" value="pass-change" class="btn btn-primary mb-5">Apply Change</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- USCF connect form -->
+    <div>
+        <h2 class="m-5 mb-0">Connect with USCF</h2>
+        <hr class="border border-2 border-info">
+        <form method="POST">
+            <!-- Uscf id -->
+            <div class="ms-5">USCF ID:</div>
+            <input type="number" name="uscf-id" minlength="8" maxlength="8" class="ms-5">
+            <!-- Form text -->
+            <div class="form-text ms-5">
+                USCF IDs are 8 digit long
+              </div>
+
+            <!-- Submit -->
+            <div>
+                <button type="submit" name="submit" value="uscf-connect" class="btn btn-primary mb-5 ms-5 mt-3">Connect</button>
+            </div>
+        </form> 
+    </div>
+</div>
+{%endblock%}

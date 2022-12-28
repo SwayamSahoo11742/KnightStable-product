@@ -1,0 +1,38 @@
+<!-- Login form page -->
+
+<!-- Extends From layout.html -->
+{%extends "layout.html" %}
+<!-- Title -->
+{% block title%} Log In {%endblock%}
+
+<!-- Specific links/scripts -->
+{%block links%}
+<link href="{{url_for('static', filename='css/logreg.css')}}" rel="stylesheet">
+{%endblock%}
+
+<!-- Main Content -->
+{% block main%}
+<!-- Invalid flash message -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-danger {{ category }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<!-- Form Area -->
+<h2 class="text-primary title">Log in</h2>
+<div class="form-area">
+    <form action="/login" method="POST">
+      <!-- Username Field -->
+        <label for="username" class="form-label">Username</label>
+        <input type="text" maxlength="20" minlength="4" placeholder="Username" id="username" name="username" class="form-control">
+      <!-- Password Field -->
+        <label for="password" class="form-label">Password</label>
+        <input type="password" minlength="6" placeholder="Password" name="password" class="form-control" id="password">
+      <!-- Login Btn -->
+        <button type="submit" class="btn btn-primary mt-4">Log in</button>
+    </form>
+</div>
+{%endblock%}

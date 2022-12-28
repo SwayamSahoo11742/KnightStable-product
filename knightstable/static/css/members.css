@@ -1,0 +1,31 @@
+/* This file is used for: Member list pages, 
+Specifics : "memeber.html" */
+
+/* Members table */
+.members-table{
+    max-width: 90%;
+    color: white;
+}
+
+
+/* top 10 players title */
+.t10{
+    color:#383838;
+}
+
+/* Player names */
+
+.player-name{
+    text-decoration: none;
+    color: black ;
+}
+
+.player-name:hover{
+    color: #0066CC;
+}
+
+.user-search {
+    margin-top: 45%;
+    min-width: 75%;
+    padding: 5%;
+}

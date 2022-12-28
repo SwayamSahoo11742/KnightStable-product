@@ -1,0 +1,20 @@
+/* This file is used for: Account pages, 
+Specifics : "account.html" */
+
+/* password fields */
+.pass-field{
+    width: 60%;
+}
+
+/* Account card */
+.account-card{
+    min-width: 90%;
+    min-height: 80%;
+}
+
+/* Pfp */
+
+.pfp{
+    width: 20%;
+    border: black solid 1px;
+}
