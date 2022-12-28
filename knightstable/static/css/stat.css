@@ -28,9 +28,11 @@ Specifics : "stats.html" */
     background-color: transparent;
     border: 0px;
     border-bottom: 1px gray solid;
+    color: white;
 }
 
 .stats-btn:hover{
+    color: black;
     background-color: #cfcfcf;
 }
 

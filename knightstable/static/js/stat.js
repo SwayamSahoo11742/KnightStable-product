@@ -29,9 +29,15 @@ data: {
   }]
 },
 options: {
+  legend: {
+    labels: {
+      fontColor: "#ffffff"
+    }
+  },
   title: {
     display: true,
     text: "Stats as White",
+    fontColor: "#ffffff",
     font:{
         size: 50
     }
@@ -86,15 +92,26 @@ new Chart("rating-graph", {
     datasets: [{
       fill: false,
       lineTension: 0,
-      backgroundColor: "rgba(0,0,255,1.0)",
-      borderColor: "rgba(0,0,255,0.1)",
+      backgroundColor: "rgba(255,255,255,1.0)",
+      borderColor: "rgba(2,208,227,0.7)",
       data: yValues
     }]
   },
   options: {
     legend: {display: false},
     scales: {
-      yAxes: [{ticks: {min: 100, max:xValues.lenght}}],
+      yAxes: [{
+        ticks: {min: 100, max:xValues.lenght},
+        gridLines: {
+          color: "rgba(255,255,255,0.2)"
+        }
+      }],
+      xAxes: [{
+        gridLines: {
+          color: "rgba(255,255,255,0.2)"
+        },
+      }]
     }
+    
   }
 });
