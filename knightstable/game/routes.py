@@ -3,7 +3,7 @@ import sqlite3
 from flask import redirect, render_template, request, session
 from flask_socketio import send, join_room
 
-db = "C:/Users/Dodo/Desktop/Projects/games.db"
+db = "games.db"
 chess = Blueprint("chess", __name__)
 from .. import socketio
 

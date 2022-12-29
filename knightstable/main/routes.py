@@ -2,7 +2,7 @@ from flask import Blueprint
 import sqlite3
 from flask import render_template, request
 
-db = "C:/Users/Dodo/Desktop/Projects/games.db"
+db = "games.db"
 main = Blueprint("main", __name__)
 
 
