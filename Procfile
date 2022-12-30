@@ -1,1 +1,1 @@
-web: gunicorn app:app
+web: gunicorn app:app release:gunicorn -k gevent -w 1 module:app

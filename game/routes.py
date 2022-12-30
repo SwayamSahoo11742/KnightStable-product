@@ -249,7 +249,7 @@ def play():
 
             # As long as black player is not here
             while not black_player:
-                time.sleep(10)
+                time.sleep()
                 # Keep looking if any joined
                 cursor.execute(
                     "SELECT black FROM ksgame WHERE game_id = %s", (lastrowid,)
