@@ -8,7 +8,7 @@ from psycopg2.extras import RealDictCursor
 main = Blueprint("main", __name__)
 
 
-@main.route("/about")
+@main.route("/")
 def about():
     return render_template("about.html")
 

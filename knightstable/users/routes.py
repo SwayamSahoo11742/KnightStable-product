@@ -157,7 +157,7 @@ def logout():
 
 
 # Home page
-@users.route("/")
+@users.route("/home")
 def home():
     # Checking if user is logged
     if "logged" not in session:
