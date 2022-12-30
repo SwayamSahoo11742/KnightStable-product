@@ -2,11 +2,11 @@ from flask import Blueprint
 import sqlite3
 from flask import flash, redirect, render_template, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
-from knightstable.user_profile.helpers import save_pfp, get_uscf_rating
+from user_profile.helpers import save_pfp, get_uscf_rating
 import psycopg2
-from knightstable import db
+from app import db
 profiling = Blueprint("profiling", __name__)
-from knightstable import app
+from app import app
 
 # Profile Page
 @profiling.route("/profile", methods=["GET", "POST"])

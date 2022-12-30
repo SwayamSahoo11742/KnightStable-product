@@ -1,9 +1,9 @@
 from flask import Blueprint
 from flask import flash, redirect, render_template, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
-from knightstable.users.helpers import get_tournaments, get_uscf_rating
+from users.helpers import get_uscf_rating, get_tournaments
 import psycopg2
-from knightstable import db
+from app import db
 from psycopg2.extras import RealDictCursor 
 users = Blueprint("users", __name__)
 

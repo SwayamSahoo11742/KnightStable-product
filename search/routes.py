@@ -3,7 +3,7 @@ import sqlite3
 from flask import render_template, request
 import psycopg2
 from psycopg2.extras import RealDictCursor
-from knightstable import db
+from app import db
 
 searches = Blueprint("searches", __name__)
 

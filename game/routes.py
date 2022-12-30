@@ -3,10 +3,10 @@ from flask import redirect, render_template, request, session
 from flask_socketio import send, join_room
 import psycopg2
 from psycopg2.extras import RealDictCursor
-from knightstable import db
+from app import db
 
 chess = Blueprint("chess", __name__)
-from .. import socketio
+from app import socketio
 
 # -------------------------------------SOCKETIO-----------------------------------------------------------------#
 

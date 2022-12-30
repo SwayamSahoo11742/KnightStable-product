@@ -1,9 +1,9 @@
 from flask import Flask, request, session
 from flask_session import Session
-from knightstable.helpers import strip_eval, cap
+from helpers import strip_eval, cap
 from flask_socketio import SocketIO
 from flask_ngrok import run_with_ngrok
-from knightstable.config import Config
+from config import Config
 import psycopg2
 import os
 db = "postgres://gosegepgoehqhg:e23cf1d5e2e573d889d6a1b1d6e8ff0faefdd30a3f90d048bbb7965934a44c2c@ec2-34-197-84-74.compute-1.amazonaws.com:5432/d6gt830qsdsj7a"
@@ -22,11 +22,11 @@ app.jinja_env.globals.update(cap=cap)
 
 socketio = SocketIO(app)
 # Blueprint imports
-from knightstable.users.routes import users
-from knightstable.user_profile.routes import profiling
-from knightstable.search.routes import searches
-from knightstable.main.routes import main
-from knightstable.game.routes import chess
+from users.routes import users
+from user_profile.routes import profiling
+from search.routes import searches
+from main.routes import main
+from game.routes import chess
 
 # Registering blueprints
 

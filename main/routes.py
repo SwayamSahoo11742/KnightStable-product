@@ -1,7 +1,7 @@
 from flask import Blueprint
 import sqlite3
 from flask import render_template, request
-from knightstable import db
+from app import db
 import psycopg2
 from psycopg2.extras import RealDictCursor
 
