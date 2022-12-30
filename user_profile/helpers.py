@@ -16,7 +16,7 @@ def save_pfp(pfp, app):
     filename = hex + f_ext
 
     # Make path
-    path = os.path.join(app.root_path, "static/img/pfp", filename)
+    path = os.path.join("/static/img/pfp", filename)
 
     # Deciding output size
     output_size = (221, 228)
