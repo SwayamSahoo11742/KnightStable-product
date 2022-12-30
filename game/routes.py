@@ -1,10 +1,10 @@
 from flask import Blueprint
-from flask import redirect, render_template, request, session
+from flask import redirect, render_template, request, session,flash
 from flask_socketio import send, join_room
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from app import db
-
+import time
 chess = Blueprint("chess", __name__)
 from app import socketio
 
@@ -52,6 +52,7 @@ def message(data):
 @socketio.on("gameOver", namespace="/play")
 def game_over(gameinfo):
     # Connect to db
+
     game = psycopg2.connect(db)
     cursor = game.cursor()
 
@@ -144,8 +145,10 @@ def game_over(gameinfo):
 @chess.route("/play/<id>")
 def game(id):
     # Seems empty, because matchmaking and settings handling is done at "/play", where they select the settinsg they want and matchmade there as well
-
     # Connect to db
+    if "logged" not in session:
+        flash("You should login")
+        return redirect("/")
     users = psycopg2.connect(db)
     cursor = users.cursor()
     # Getting pfps
@@ -171,11 +174,17 @@ def game(id):
 def play():
     # If GET request, render template
     if request.method == "GET":
+        if "logged" not in session:
+            flash("You should login")
+            return redirect("/")
         return render_template("play.html")
     # If POST
     else:
+        if "logged" not in session:
+            flash("You should login")
+            return redirect("/")
         # Get specified customizations
-        time = request.form.get("time")
+        time_control = request.form.get("time")
         rated = request.form.get("rated")
         # Connect to db
         games = psycopg2.connect(db, cursor_factory=RealDictCursor)
@@ -190,7 +199,7 @@ def play():
         # Retrieving all the games that match user's specifications and are searching
         cursor.execute(
             "SELECT game_id FROM ksgame WHERE status = 'searching' AND time = %s AND rated = %s AND white != %s LIMIT 1",
-            (time, rated, session["username"]),
+            (time_control, rated, session["username"]),
         )
         pending_games = cursor.fetchall()
         # Turning into a dict object
@@ -221,7 +230,7 @@ def play():
             # Adding user as white if no pending available, and adding the game params with it
             cursor.execute(
                 "INSERT INTO ksgame (white, status, time, rated, white_rating) VALUES (%s,%s,%s,%s,%s) RETURNING game_id",
-                (session["username"], "searching", time, rated, rating),
+                (session["username"], "searching", time_control, rated, rating),
             )
             lastrowid = cursor.fetchone()["game_id"]
             # Adding the link to the db
@@ -240,6 +249,7 @@ def play():
 
             # As long as black player is not here
             while not black_player:
+                time.sleep(10)
                 # Keep looking if any joined
                 cursor.execute(
                     "SELECT black FROM ksgame WHERE game_id = %s", (lastrowid,)
