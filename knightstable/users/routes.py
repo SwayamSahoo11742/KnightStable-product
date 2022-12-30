@@ -1,10 +1,10 @@
 from flask import Blueprint
-import sqlite3
 from flask import flash, redirect, render_template, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
 from knightstable.users.helpers import get_tournaments, get_uscf_rating
-
-db = "games.db"
+import psycopg2
+from knightstable import db
+from psycopg2.extras import RealDictCursor 
 users = Blueprint("users", __name__)
 
 
@@ -16,8 +16,7 @@ def register():
         return render_template("register.html")
     else:
         # Connecting to db
-        users = sqlite3.connect(db)
-        users.row_factory = sqlite3.Row
+        users = psycopg2.connect(db,cursor_factory=RealDictCursor)
         cursor = users.cursor()
 
         # Getting user's input
@@ -27,9 +26,9 @@ def register():
         confirm = request.form.get("confirmation")
 
         # Setting up and executing query for username search
-        query = "SELECT COUNT(username) FROM users WHERE username = ?"
-        db_users = cursor.execute(query, (username,))
-        db_users = db_users.fetchone()[0]
+        query = "SELECT COUNT(username) FROM users WHERE username = %s"
+        cursor.execute(query, (username,))
+        db_users = cursor.fetchone()["count"]
 
         # Checking for invalid usernames or emails or passwords
         if len(username) < 4:
@@ -49,9 +48,9 @@ def register():
             return redirect("/register")
 
         # Looking to see if same email
-        query = "SELECT COUNT(email) FROM users WHERE email = ?"
+        query = "SELECT COUNT(email) FROM users WHERE email = %s"
         db_emails = cursor.execute(query, (email,))
-        db_emails = db_emails.fetchone()[0]
+        db_emails = cursor.fetchone()["count"]
         if db_emails != 0:
             flash("Email already registered", "error")
             return redirect("/register")
@@ -65,7 +64,7 @@ def register():
         hash = generate_password_hash(password)
 
         # Setting up and executing query
-        query = "INSERT INTO users (username, email, hash) VALUES (?,?,?)"
+        query = "INSERT INTO users (username, email, hash) VALUES (%s,%s,%s)"
         data_tuple = (username, email, hash)
         cursor.execute(query, data_tuple)
 
@@ -74,9 +73,10 @@ def register():
 
         # Setting user's satus as logged
         session["logged"] = True
-        user_rows = cursor.execute(
-            "SELECT * FROM users WHERE username = ?", (request.form.get("username"),)
-        ).fetchall()
+        cursor.execute(
+            "SELECT * FROM users WHERE username = %s", (request.form.get("username"),)
+        )
+        user_rows = cursor.fetchall()
         # Updating user's session with needed info
         session["user_id"] = user_rows[0]["id"]
         session["username"] = user_rows[0]["username"]
@@ -97,8 +97,7 @@ def login():
     if request.method == "GET":
         return render_template("login.html")
     else:
-        users = sqlite3.connect(db)
-        users.row_factory = sqlite3.Row
+        users = psycopg2.connect(db, cursor_factory=RealDictCursor)
         cursor = users.cursor()
 
         # Checking for valid username
@@ -111,9 +110,10 @@ def login():
             flash("Password was not provided")
             return redirect("/login")
         # Checking for matching username and pass
-        user_rows = cursor.execute(
-            "SELECT * FROM users WHERE username = ?", (request.form.get("username"),)
-        ).fetchall()
+        cursor.execute(
+            "SELECT * FROM users WHERE username = %s", (request.form.get("username"),)
+        )
+        user_rows = cursor.fetchall()
         if len(user_rows) != 1 or not check_password_hash(
             user_rows[0]["hash"], request.form.get("password")
         ):
@@ -138,6 +138,7 @@ def login():
             session["uscf_rating"] = get_uscf_rating(session["uscf"])
         else:
             session["uscf_rating"] = "(Unrated)"
+        print("logged")
         flash("Logged in Successfully")
         return redirect("/")
 
@@ -163,24 +164,21 @@ def home():
         flash("You should log in", "alert-danger")
         return redirect("/about")
     # Connecting to db
-    users = sqlite3.connect(db)
-    # Row Factory
-    users.row_factory = sqlite3.Row
+    users = psycopg2.connect(db, cursor_factory=RealDictCursor)
     # Cursor object
     cursor = users.cursor()
 
     # Getting top 10 players
-    games = cursor.execute(
+    cursor.execute(
         "SELECT username, rating FROM users ORDER BY rating DESC LIMIT 10"
-    ).fetchall()
+    )
+    games = cursor.fetchall()
     players = [dict(x) for x in games]
 
     # Rating
-    rating = dict(
-        cursor.execute(
-            "SELECT rating FROM users WHERE username = ?", (session["username"],)
-        ).fetchone()
-    )["rating"]
+    rating = cursor.execute("SELECT rating FROM users WHERE username = %s", (session["username"],)
+        )
+    rating = dict(cursor.fetchone())["rating"]
     users.close()
 
     # Getting recent events

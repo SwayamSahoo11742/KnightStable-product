@@ -4,12 +4,16 @@ from knightstable.helpers import strip_eval, cap
 from flask_socketio import SocketIO
 from flask_ngrok import run_with_ngrok
 from knightstable.config import Config
-
+import psycopg2
+import os
+db = "postgres://gosegepgoehqhg:e23cf1d5e2e573d889d6a1b1d6e8ff0faefdd30a3f90d048bbb7965934a44c2c@ec2-34-197-84-74.compute-1.amazonaws.com:5432/d6gt830qsdsj7a"
 # App
 app = Flask(__name__)
 # App Config
 app.config.from_object(Config)
 Session(app)
+
+DATABASE_URL = os.environ.get('DATABASE_URL')
 
 
 # Adding custom functions
@@ -33,10 +37,8 @@ app.register_blueprint(main)
 app.register_blueprint(chess)
 
 
-run_with_ngrok(app)
 
 # Connecting to database
-db = "C:/Users/Dodo/Desktop/Projects/games.db"
 
 # Running
 

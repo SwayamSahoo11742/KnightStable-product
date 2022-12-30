@@ -1,8 +1,10 @@
 from flask import Blueprint
 import sqlite3
 from flask import render_template, request
+from knightstable import db
+import psycopg2
+from psycopg2.extras import RealDictCursor
 
-db = "games.db"
 main = Blueprint("main", __name__)
 
 
@@ -23,15 +25,15 @@ def members():
     # If GET request
     if request.method == "GET":
         # Connecting to db
-        members = sqlite3.connect(db)
-        members.row_factory = sqlite3.Row
+        members = psycopg2.connect(db, cursor_factory=RealDictCursor)
         # Cursor object
         cursor = members.cursor()
 
         # Getting top 10 players
-        users = cursor.execute(
+        cursor.execute(
             "SELECT username, rating FROM users ORDER BY rating DESC LIMIT 10"
-        ).fetchall()
+        )
+        users = cursor.fetchall()
         users = [dict(x) for x in users]
 
         members.close()
@@ -41,16 +43,16 @@ def members():
     else:
         username = request.form.get("username")
         # Connecting to db
-        members = sqlite3.connect(db)
-        members.row_factory = sqlite3.Row
+        members = psycopg2.connect(db, cursor_factory=RealDictCursor)
         # Cursor object
         cursor = members.cursor()
 
         # Getting top 10 players
-        users = cursor.execute(
-            "SELECT username, rating FROM users WHERE username LIKE ?",
+        cursor.execute(
+            "SELECT username, rating FROM users WHERE username LIKE %s",
             ("%" + username + "%",),
-        ).fetchall()
+        )
+        users = cursor.fetchall()
         users = [dict(x) for x in users]
 
         # Closing db

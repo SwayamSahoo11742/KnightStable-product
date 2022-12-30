@@ -3,6 +3,7 @@ import time
 from bs4 import BeautifulSoup
 import sqlite3
 from selenium.webdriver.common.by import By
+import psycopg2
 
 # Connecting to Database
 db = sqlite3.connect("games.db")

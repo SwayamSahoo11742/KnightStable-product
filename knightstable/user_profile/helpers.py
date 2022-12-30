@@ -28,6 +28,7 @@ def save_pfp(pfp, app):
 
     # Saving resized image into path
     i.save(path)
+    return filename
 
 
 def get_uscf_rating(id):
