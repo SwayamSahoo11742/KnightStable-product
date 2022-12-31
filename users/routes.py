@@ -153,7 +153,7 @@ def logout():
         session["logged"] == False
         # Clearing login session
         session.clear()
-        return redirect("/about")
+        return redirect("/")
 
 
 # Home page
