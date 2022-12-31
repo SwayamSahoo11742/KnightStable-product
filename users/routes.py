@@ -80,7 +80,7 @@ def register():
         # Updating user's session with needed info
         session["user_id"] = user_rows[0]["id"]
         session["username"] = user_rows[0]["username"]
-        session["pfp"] = "/static\img\pfp/" + user_rows[0]["pfp"]
+        session["pfp"] = "/app/static\img\pfp/" + user_rows[0]["pfp"]
         session["about"] = user_rows[0]["about"]
         session["uscf"] = ""
         session["uscf_rating"] = "(Unrated)"
@@ -124,7 +124,7 @@ def login():
         session["user_id"] = user_rows[0]["id"]
         session["username"] = user_rows[0]["username"]
         session["logged"] = True
-        session["pfp"] = "/static\img\pfp/" + user_rows[0]["pfp"]
+        session["pfp"] = "/app/static\img\pfp/" + user_rows[0]["pfp"]
         session["about"] = user_rows[0]["about"]
         session["uscf"] = (
             lambda: user_rows[0]["uscf"] if user_rows[0]["uscf"] != "" else ""
